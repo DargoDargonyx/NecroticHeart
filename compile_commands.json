@@ -1,0 +1,84 @@
+[
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-I/usr/include/SDL2",
+      "-D_GNU_SOURCE=1",
+      "-D_REENTRANT",
+      "-c",
+      "-o",
+      "bin/main.o",
+      "src/main.c"
+    ],
+    "directory": "/home/dargo/DevWork/Games/NecroticHeart",
+    "file": "/home/dargo/DevWork/Games/NecroticHeart/src/main.c",
+    "output": "/home/dargo/DevWork/Games/NecroticHeart/bin/main.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-Wall",
+      "-Wextra",
+      "-I",
+      "include",
+      "-c",
+      "-o",
+      "bin/external/cJSON.o",
+      "src/external/cJSON.c"
+    ],
+    "directory": "/home/dargo/DevWork/Games/NecroticHeart",
+    "file": "/home/dargo/DevWork/Games/NecroticHeart/src/external/cJSON.c",
+    "output": "/home/dargo/DevWork/Games/NecroticHeart/bin/external/cJSON.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-Wall",
+      "-Wextra",
+      "-I",
+      "include",
+      "-c",
+      "-o",
+      "bin/util/file.o",
+      "src/util/file.c"
+    ],
+    "directory": "/home/dargo/DevWork/Games/NecroticHeart",
+    "file": "/home/dargo/DevWork/Games/NecroticHeart/src/util/file.c",
+    "output": "/home/dargo/DevWork/Games/NecroticHeart/bin/util/file.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-Wall",
+      "-Wextra",
+      "-I",
+      "include",
+      "-c",
+      "-o",
+      "bin/util/helper.o",
+      "src/util/helper.c"
+    ],
+    "directory": "/home/dargo/DevWork/Games/NecroticHeart",
+    "file": "/home/dargo/DevWork/Games/NecroticHeart/src/util/helper.c",
+    "output": "/home/dargo/DevWork/Games/NecroticHeart/bin/util/helper.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-Wall",
+      "-Wextra",
+      "-I",
+      "include",
+      "-I/usr/include/SDL2",
+      "-D_GNU_SOURCE=1",
+      "-D_REENTRANT",
+      "-c",
+      "-o",
+      "bin/window/display.o",
+      "src/window/display.c"
+    ],
+    "directory": "/home/dargo/DevWork/Games/NecroticHeart",
+    "file": "/home/dargo/DevWork/Games/NecroticHeart/src/window/display.c",
+    "output": "/home/dargo/DevWork/Games/NecroticHeart/bin/window/display.o"
+  }
+]

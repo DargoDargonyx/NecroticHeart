@@ -1,0 +1,10 @@
+bin/
+dist/
+data/
+
+.cache
+
+*.o
+*.swp
+*.log
+*.tmp
