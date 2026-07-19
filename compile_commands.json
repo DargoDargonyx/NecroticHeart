@@ -2,6 +2,10 @@
   {
     "arguments": [
       "/usr/bin/gcc",
+      "-Wall",
+      "-Wextra",
+      "-I",
+      "include",
       "-I/usr/include/SDL2",
       "-D_GNU_SOURCE=1",
       "-D_REENTRANT",
