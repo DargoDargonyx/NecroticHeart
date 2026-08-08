@@ -19,7 +19,7 @@ all: $(TARGET)
 $(BIN_DIR)/main.o: $(MAIN_SRC)
 	@echo "Compiling $<"
 	@mkdir -p $(dir $@)
-	@$(CC) $(CFLAGS) $(SDL_CFLAGS) -c $< -o $@
+	@$(CC) $(BASE_CFLAGS) $(SDL_CFLAGS) -c $< -o $@
 
 $(TARGET): $(OBJ)
 	@echo "Linking files..."
