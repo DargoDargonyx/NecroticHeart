@@ -7,6 +7,10 @@
 #define GAME_NAME "NecroticHeart"
 
 #include "util/file.h"
+#include "util/config.h"
+#include "window/display.h"
+#include "engine/game.h"
+
 #include <stdio.h>
 
 int check_args(int argc, char** argv) {
@@ -22,12 +26,24 @@ int main(int argc, char** argv) {
     err = seed_configs();
     if (err) return err;
 
-    ConfigCont* config_cont = init_config();
-    err = read_config(config_cont);
+    if (init_config()) return 1;
+	ConfigCont* config = get_config();
+    err = read_config(config);
     if (err) return err;
 
-    if (argv[1] || config_cont->dev_opts->print_configs) print_configs(config_cont);
+    if (argv[1] || config->dev_opts->print_configs) print_configs(config);
 
-    err = destroy_config(config_cont);
-    return err;
+    SDL_Init(SDL_INIT_VIDEO);
+    if (init_game_window(GAME_NAME)) {
+        SDL_Quit();
+        return 1;
+    }
+
+	err = run_game_loop();
+    
+	destroy_game_window();
+    SDL_Quit();
+    destroy_config();
+    
+	return err;
 }

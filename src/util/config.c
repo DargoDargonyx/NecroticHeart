@@ -9,30 +9,47 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+static ConfigCont* config = NULL;
+
 // General Config
 
-ConfigCont* init_config() {
-    ConfigCont* config_cont = malloc(sizeof(ConfigCont));
+int init_config() {
+	if (config) return 1;
 
-    config_cont->dev_opts = init_dev_opts_config();
-    if (!config_cont->dev_opts) printf("ERROR: Loaded an empty dev opts config\n");
+    config = malloc(sizeof(ConfigCont));
 
-    config_cont->player_info = init_player_info_config();
-    if (!config_cont->player_info) printf("ERROR: Loaded an empty player info config\n");
+    config->dev_opts = init_dev_opts_config();
+    if (!config->dev_opts) {
+		printf("ERROR: Loaded an empty dev opts config\n");
+		return 1;
+	}
 
-    return config_cont;
+    config->display = init_display_config();
+    if (!config->display) {
+		printf("ERROR: Loaded an empty display config\n");
+		return 1;
+	}
+
+    config->player_info = init_player_info_config();
+    if (!config->player_info) {
+		printf("ERROR: Loaded an empty player info config\n");
+		return 1;
+	}
+
+	return 0;
 }
 
-int destroy_config(ConfigCont* config_cont) {
-    int err;
+void destroy_config() {
+    destroy_dev_opts_config(config->dev_opts);
+    destroy_display_config(config->display);
+    destroy_player_info_config(config->player_info);
 
-    err = destroy_dev_opts_config(config_cont->dev_opts);
-    if (err) return err;
-    err = destroy_player_info_config(config_cont->player_info);
-    if (err) return err;
+    free(config);
+	config = NULL;
+}
 
-    free(config_cont);
-    return err;
+ConfigCont* get_config() {
+	return config;
 }
 
 // Dev opts config
@@ -42,9 +59,8 @@ DevOptsConfig* init_dev_opts_config() {
     return dev_opts;
 }
 
-int destroy_dev_opts_config(DevOptsConfig* dev_opts) {
+void destroy_dev_opts_config(DevOptsConfig* dev_opts) {
     free(dev_opts);
-    return 0;
 }
 
 void print_configs(ConfigCont* config_cont) {
@@ -53,6 +69,17 @@ void print_configs(ConfigCont* config_cont) {
            "Language: %s\n"
            "========================================\n",
            config_cont->player_info->username, config_cont->player_info->language);
+}
+
+// Display config
+
+DisplayConfig* init_display_config() {
+	DisplayConfig* display = malloc(sizeof(DisplayConfig));
+	return display;
+}
+
+void destroy_display_config(DisplayConfig* display) {
+	free(display);
 }
 
 // Player info config
@@ -65,10 +92,8 @@ PlayerInfoConfig* init_player_info_config() {
     return player_info;
 }
 
-int destroy_player_info_config(PlayerInfoConfig* player_info) {
+void destroy_player_info_config(PlayerInfoConfig* player_info) {
     free(player_info->username);
     free(player_info->language);
     free(player_info);
-
-    return 0;
 }

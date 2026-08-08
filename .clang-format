@@ -22,3 +22,6 @@ AllowShortLoopsOnASingleLine: true
 AllowShortBlocksOnASingleLine: Always
 AllowShortFunctionsOnASingleLine: true
 AllowAllArgumentsOnNextLine: true
+
+BinPackArguments: false
+BinPackParameters: false

@@ -73,7 +73,9 @@ int seed_configs() {
 
     err = seed_dev_opts_config();
     if (err) return err;
-    err = seed_player_info_config();
+    err = seed_display_config();
+	if (err) return err;
+	err = seed_player_info_config();
 
     return err;
 }
@@ -82,6 +84,8 @@ int read_config(ConfigCont* config_cont) {
     int err;
 
     err = read_dev_opts_config(config_cont->dev_opts);
+    if (err) return err;
+    err = read_display_config(config_cont->display);
     if (err) return err;
     err = read_player_info_config(config_cont->player_info);
 
@@ -125,9 +129,9 @@ int read_dev_opts_config(DevOptsConfig* dev_opts) {
     cJSON* print_configs = cJSON_GetObjectItemCaseSensitive(json, "print_configs");
 
     if (cJSON_IsBool(print_configs)) {
-        dev_opts->print_configs = cJSON_IsTrue(print_configs);
+        dev_opts->print_configs = print_configs->valueint;
     } else {
-        printf("ERROR: Could not find a \"Username\" field in the json file {%s}\n",
+        printf("ERROR: Could not find a proper \"print_configs\" field in the json file {%s}\n",
                PLAYER_INFO_CONFIG_PATH);
         cJSON_Delete(json);
         return 1;
@@ -142,6 +146,75 @@ int write_dev_opts_config(DevOptsConfig* dev_opts) {
     cJSON_AddBoolToObject(json, "print_configs", dev_opts->print_configs);
 
     int err = write_json(json, DEV_OPTS_CONFIG_PATH);
+    cJSON_Delete(json);
+    return err;
+}
+
+// Display config
+
+int seed_display_config() {
+    if (file_exists(DISPLAY_CONFIG_PATH)) return 0;
+
+    cJSON* json = cJSON_CreateObject();
+    cJSON_AddBoolToObject(json, "fullscreen", 0);
+    cJSON_AddNumberToObject(json, "resolution_x", 800);
+    cJSON_AddNumberToObject(json, "resolution_y", 600);
+
+    int err = write_json(json, DISPLAY_CONFIG_PATH);
+    cJSON_Delete(json);
+    return err;
+}
+
+int read_display_config(DisplayConfig* display) {
+    char* json_str = read_json(DISPLAY_CONFIG_PATH);
+    if (!json_str) return 1;
+
+    cJSON* json = cJSON_Parse(json_str);
+    free(json_str);
+    if (!json) {
+        printf("ERROR: Could not parse the json file {%s}\n", DISPLAY_CONFIG_PATH);
+        return 1;
+    }
+
+    cJSON* fullscreen = cJSON_GetObjectItemCaseSensitive(json, "fullscreen");
+    if (cJSON_IsBool(fullscreen)) {
+        display->fullscreen = fullscreen->valueint;
+    } else {
+        printf("ERROR: Could not find a proper \"fullscreen\" field in the json file {%s}\n",
+               DISPLAY_CONFIG_PATH);
+        cJSON_Delete(json);
+        return 1;
+    }
+
+	cJSON* resolution_x = cJSON_GetObjectItemCaseSensitive(json, "resolution_x");
+	if (!cJSON_IsNumber(resolution_x)) {
+		printf("ERROR: Could not find a proper \"resolution_x\" field in the json file {%s}\n",
+               DISPLAY_CONFIG_PATH);
+        cJSON_Delete(json);
+        return 1;
+	}
+
+	cJSON* resolution_y = cJSON_GetObjectItemCaseSensitive(json, "resolution_y");
+	if (!cJSON_IsNumber(resolution_y)) {
+        printf("ERROR: Could not find a proper \"resolution_y\" field in the json file {%s}\n",
+               DISPLAY_CONFIG_PATH);
+        cJSON_Delete(json);
+        return 1;
+	}
+
+	display->resolution = (IntSize) {resolution_x->valueint, resolution_y->valueint};
+
+    cJSON_Delete(json);
+    return 0;
+}
+
+int write_display_config(DisplayConfig* display) {
+    cJSON* json = cJSON_CreateObject();
+    cJSON_AddBoolToObject(json, "fullscreen", display->fullscreen);
+    cJSON_AddNumberToObject(json, "resolution_x", display->resolution.w);
+    cJSON_AddNumberToObject(json, "resolution_y", display->resolution.h);
+
+    int err = write_json(json, DISPLAY_CONFIG_PATH);
     cJSON_Delete(json);
     return err;
 }
@@ -177,7 +250,7 @@ int read_player_info_config(PlayerInfoConfig* player_info) {
     if (cJSON_IsString(username)) {
         player_info->username = strdup(username->valuestring);
     } else {
-        printf("ERROR: Could not find a \"Username\" field in the json file {%s}\n",
+        printf("ERROR: Could not find a proper \"Username\" field in the json file {%s}\n",
                PLAYER_INFO_CONFIG_PATH);
         cJSON_Delete(json);
         return 1;
@@ -186,7 +259,7 @@ int read_player_info_config(PlayerInfoConfig* player_info) {
     if (cJSON_IsString(language)) {
         player_info->language = strdup(language->valuestring);
     } else {
-        printf("ERROR: Could not find a \"Language\" field in the json file {%s}\n",
+        printf("ERROR: Could not find a proper \"Language\" field in the json file {%s}\n",
                PLAYER_INFO_CONFIG_PATH);
         cJSON_Delete(json);
         return 1;

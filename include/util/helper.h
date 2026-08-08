@@ -1,5 +1,36 @@
 /**
  * @file helper.h
  * @author DargoDargonyx
- * @date 07/18/2026
+ * @date 08/08/2026
  */
+
+#ifndef HELPER_H
+#define HELPER_H
+
+typedef struct {
+    int w;
+    int h;
+} IntSize;
+
+typedef struct {
+    float w;
+    float h;
+} FloatSize;
+
+typedef struct {
+    int x;
+    int y;
+} IntPos;
+
+typedef struct {
+    float x;
+    float y;
+} FloatPos;
+
+typedef struct {
+    float x;
+    float y;
+    float z;
+} FloatPos3;
+
+#endif // HELPER_H
