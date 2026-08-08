@@ -15,7 +15,7 @@
 
 int check_args(int argc, char** argv) {
     if (argc > 2) {
-        printf("Usage: %s <print_configs: bool>\n", argv[0]);
+        printf(PRINT_WARNING "Usage: %s <print_configs: bool>\n", argv[0]);
         return 1;
     }
     return 0;

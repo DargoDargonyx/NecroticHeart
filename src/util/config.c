@@ -20,19 +20,19 @@ int init_config() {
 
     config->dev_opts = init_dev_opts_config();
     if (!config->dev_opts) {
-		printf("ERROR: Loaded an empty dev opts config\n");
+		printf(PRINT_WARNING "Loaded an empty dev opts config\n");
 		return 1;
 	}
 
     config->display = init_display_config();
     if (!config->display) {
-		printf("ERROR: Loaded an empty display config\n");
+		printf(PRINT_WARNING "ERROR: Loaded an empty display config\n");
 		return 1;
 	}
 
     config->player_info = init_player_info_config();
     if (!config->player_info) {
-		printf("ERROR: Loaded an empty player info config\n");
+		printf(PRINT_WARNING "ERROR: Loaded an empty player info config\n");
 		return 1;
 	}
 
