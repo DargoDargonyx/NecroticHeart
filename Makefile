@@ -25,6 +25,7 @@ $(TARGET): $(OBJ)
 	@echo "Linking files..."
 	@mkdir -p $(DIST_DIR)
 	@$(CC) $^ -o $@ $(SDL_LIBS)
+	@echo "Project linked."
 
 copy_libs:
 	@echo "Copying SDL libraries..."
@@ -38,7 +39,7 @@ copy_libs:
 clean:
 	@echo "Cleaning targets..."
 	@rm -rf $(BIN_DIR) $(DIST_DIR)
-	@echo "Targets cleaned"
+	@echo "Targets cleaned."
 
 debug:
 	$(MAKE) clean MODE_CFLAGS="-g -00"
@@ -48,4 +49,4 @@ release:
 	strip $(TARGET)
 
 run: all
-	@cd $(DIST_DIR) && ./game
+	@cd $(DIST_DIR) && ./game $(ARGS)
