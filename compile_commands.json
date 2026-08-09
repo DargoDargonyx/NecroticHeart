@@ -19,6 +19,54 @@
     "output": "bin/main.o"
   },
   {
+    "file": "src/engine/game.c",
+    "arguments": [
+      "/usr/bin/gcc",
+      "-Wall",
+      "-Wextra",
+      "-I",
+      "include",
+      "-c",
+      "src/engine/game.c",
+      "-o",
+      "bin/engine/game.o"
+    ],
+    "directory": "/home/dargo/DevWork/Games/NecroticHeart",
+    "output": "bin/engine/game.o"
+  },
+  {
+    "file": "src/engine/scene.c",
+    "arguments": [
+      "/usr/bin/gcc",
+      "-Wall",
+      "-Wextra",
+      "-I",
+      "include",
+      "-c",
+      "src/engine/scene.c",
+      "-o",
+      "bin/engine/scene.o"
+    ],
+    "directory": "/home/dargo/DevWork/Games/NecroticHeart",
+    "output": "bin/engine/scene.o"
+  },
+  {
+    "file": "src/engine/widget.c",
+    "arguments": [
+      "/usr/bin/gcc",
+      "-Wall",
+      "-Wextra",
+      "-I",
+      "include",
+      "-c",
+      "src/engine/widget.c",
+      "-o",
+      "bin/engine/widget.o"
+    ],
+    "directory": "/home/dargo/DevWork/Games/NecroticHeart",
+    "output": "bin/engine/widget.o"
+  },
+  {
     "file": "src/external/cJSON.c",
     "arguments": [
       "/usr/bin/gcc",
@@ -67,7 +115,7 @@
     "output": "bin/util/file.o"
   },
   {
-    "file": "src/util/helper.c",
+    "file": "src/util/font.c",
     "arguments": [
       "/usr/bin/gcc",
       "-Wall",
@@ -75,12 +123,12 @@
       "-I",
       "include",
       "-c",
-      "src/util/helper.c",
+      "src/util/font.c",
       "-o",
-      "bin/util/helper.o"
+      "bin/util/font.o"
     ],
     "directory": "/home/dargo/DevWork/Games/NecroticHeart",
-    "output": "bin/util/helper.o"
+    "output": "bin/util/font.o"
   },
   {
     "file": "src/window/display.c",
@@ -100,5 +148,24 @@
     ],
     "directory": "/home/dargo/DevWork/Games/NecroticHeart",
     "output": "bin/window/display.o"
+  },
+  {
+    "file": "src/window/render.c",
+    "arguments": [
+      "/usr/bin/gcc",
+      "-Wall",
+      "-Wextra",
+      "-I",
+      "include",
+      "-I/usr/include/SDL2",
+      "-D_GNU_SOURCE=1",
+      "-D_REENTRANT",
+      "-c",
+      "src/window/render.c",
+      "-o",
+      "bin/window/render.o"
+    ],
+    "directory": "/home/dargo/DevWork/Games/NecroticHeart",
+    "output": "bin/window/render.o"
   }
 ]

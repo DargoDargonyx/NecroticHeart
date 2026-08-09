@@ -8,6 +8,7 @@
 
 #include "util/file.h"
 #include "util/config.h"
+#include "util/font.h"
 #include "window/display.h"
 #include "engine/game.h"
 
@@ -35,12 +36,37 @@ int main(int argc, char** argv) {
 
     SDL_Init(SDL_INIT_VIDEO);
     if (init_game_window(GAME_NAME)) {
+		printf(PRINT_ERROR "Could not initialize game window\n");
+
         SDL_Quit();
+		destroy_config();
         return 1;
     }
 
+	TTF_Init();
+	if (init_global_fonts()) {
+		printf(PRINT_ERROR "Could not initialize global fonts\n");
+
+		destroy_game_window();
+		SDL_Quit();
+		destroy_config();
+		return 1;
+	}
+
+	if (init_scenes()) {
+		printf(PRINT_ERROR "Could not initialize game scenes\n");
+
+		destroy_global_fonts();
+		destroy_game_window();
+		SDL_Quit();
+		destroy_config();
+		return 1;
+	}
+
 	err = run_game_loop();
-    
+   
+	destroy_scenes();
+	destroy_global_fonts();
 	destroy_game_window();
     SDL_Quit();
     destroy_config();

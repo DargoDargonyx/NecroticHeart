@@ -24,6 +24,8 @@ $(BIN_DIR)/main.o: $(MAIN_SRC)
 $(TARGET): $(OBJ)
 	@echo "Linking files..."
 	@mkdir -p $(DIST_DIR)
+	@rm -rf dist/assets
+	@cp -r assets dist/
 	@$(CC) $^ -o $@ $(SDL_LIBS)
 	@echo "Project linked."
 

@@ -56,6 +56,7 @@ int init_game_window(const char* window_name) {
 		WINDOW_RENDER_LOGICAL_SIZE_Y
 	);
 
+	game_window->current_scene = START_MENU_SCENE;
 	game_window->running = 1;
 	return 0;
 }
