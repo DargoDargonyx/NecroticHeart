@@ -1,7 +1,7 @@
 /**
  * @file render.c
  * @author DargoDargonyx
- * @date 08/08/2026
+ * @date 08/09/2026
  */
 
 #include "window/render.h"
@@ -10,27 +10,7 @@
 
 
 int render_current_scene() {
-	GameWindow* game_window = get_game_window();
-	Scene* current_scene;
-
-	switch (game_window->current_scene) {
-		case START_MENU_SCENE:
-			current_scene = get_start_menu_scene();
-			break;
-		case SETTINGS_MENU_SCENE:
-			// @TODO
-			break;
-		case PLAY_SCENE:
-			// @TODO
-			break;
-		case INVENTORY_SCENE:
-			// @TODO
-			break;
-		default:
-			printf(PRINT_ERROR "Could not render a scene of unknown type\n");
-			return 1;
-	}
-
+	Scene* current_scene = get_current_scene();
 	if (render_widgets(current_scene->widget_cont)) return 1;
 	return 0;
 }
@@ -61,12 +41,19 @@ int render_button(Button* btn) {
 	GameWindow* game_window = get_game_window();
 	GlobalFonts* global_fonts = get_global_fonts();
 
-	SDL_RenderCopy(
-		game_window->sdl_renderer, 
-		btn->background, 
-		NULL, 
-		&btn->sdl_rect
-	);
+    SDL_Rect src = {
+        0,
+        btn->state * btn->sdl_rect.h * 2,
+        btn->sdl_rect.w * 2,
+        btn->sdl_rect.h * 2
+    };
+
+    SDL_RenderCopy(
+        game_window->sdl_renderer,
+        btn->background,
+        &src,
+        &btn->sdl_rect
+    );
 
 	SDL_Surface* surface = TTF_RenderUTF8_Blended(
 		global_fonts->fonts[btn->font_num], 
@@ -84,9 +71,7 @@ int render_button(Button* btn) {
 		return 1;
 	}
 
-
-	int text_w;
-	int text_h;
+	int text_w, text_h;
 	SDL_QueryTexture(text_texture, NULL, NULL, &text_w, &text_h);
 	SDL_Rect text_rect = {
 		.x = btn->sdl_rect.x + (btn->sdl_rect.w - text_w) / 2,

@@ -1,11 +1,12 @@
 /**
  * @file scene.c
  * @author DargoDargonyx
- * @date 08/08/2026
+ * @date 08/09/2026
  */
 
 #include "engine/scene.h"
 #include "util/font.h"
+#include "window/display.h"
 
 #include <stdlib.h>
 
@@ -20,6 +21,23 @@ int init_scenes(void) {
 
 void destroy_scenes(void) {
 	destroy_start_menu_scene();	
+}
+
+Scene* get_current_scene(void) {
+	GameWindow* game_window = get_game_window();
+
+	switch (game_window->current_scene) {
+		case START_MENU_SCENE: return get_start_menu_scene();
+		case SETTINGS_MENU_SCENE:
+			// @TODO
+		case PLAY_SCENE:
+			// @TODO
+		case INVENTORY_SCENE:
+			// @TODO
+		default:
+			printf(PRINT_ERROR "Could not render a scene of unknown type\n");
+			return NULL;
+	}
 }
 
 // Start menu scene

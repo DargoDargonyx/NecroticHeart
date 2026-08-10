@@ -1,7 +1,7 @@
 /**
  * @file display.h
  * @author DargoDargonyx
- * @date 08/08/2026
+ * @date 08/09/2026
  */
 
 #ifndef DISPLAY_H
@@ -27,5 +27,7 @@ typedef struct {
 GameWindow* get_game_window();
 int init_game_window(const char*);
 void destroy_game_window();
+
+int is_hovering_over_pos(IntSize, IntPos);
 
 #endif // DISPLAY_H

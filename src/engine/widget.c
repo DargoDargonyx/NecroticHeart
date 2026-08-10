@@ -46,6 +46,23 @@ void destroy_widget_cont(WidgetCont* cont) {
 	free(cont);
 }
 
+int update_widgets(WidgetCont* cont) {
+	for (int i = 0; i < cont->count; i++) {
+		switch (cont->widgets[i]->type) {
+			case BUTTON:
+				update_button((Button*) cont->widgets[i]);
+				break;
+			case INFO_TAG:
+				// @TODO
+				break;
+			default:
+				printf(PRINT_ERROR "Could not update a widget with an unknown type\n");
+				return 1;
+		}
+	}
+	return 0;
+}
+
 int add_widget_to_cont(WidgetCont* cont, Widget* widget) {
 	if (!cont) {
 		printf(PRINT_ERROR "Could not add a widget to an empty widget container\n");
@@ -120,7 +137,7 @@ Button* create_button(ButtonType type, IntSize size, IntPos pos,
 		case LONG_TRANSPARENT_BTN:	
 			btn->background = IMG_LoadTexture(
 				game_window->sdl_renderer,
-				"assets/ui/long_transparent_button.png"
+				"assets/ui/long_transparent_btn.png"
 			);
 			break;
 		default:
@@ -142,6 +159,33 @@ void destroy_button(Button* btn) {
 	}
 
 	free(btn);
+}
+
+void update_button(Button* btn) {
+    int mouse_x, mouse_y;
+    Uint32 mouse_state = SDL_GetMouseState(&mouse_x, &mouse_y);
+
+	float logical_mouse_x, logical_mouse_y;
+	GameWindow* game_window = get_game_window();
+	SDL_RenderWindowToLogical(
+		game_window->sdl_renderer,
+		mouse_x,
+		mouse_y,
+		&logical_mouse_x,
+		&logical_mouse_y
+	);
+
+	int hovering = logical_mouse_x >= btn->sdl_rect.x 
+		&& logical_mouse_x < btn->sdl_rect.x + btn->sdl_rect.w
+		&& logical_mouse_y >= btn->sdl_rect.y
+		&& logical_mouse_y < btn->sdl_rect.y + btn->sdl_rect.h;
+
+    if (!hovering)
+        btn->state = BTN_IDLE;
+    else if (mouse_state & SDL_BUTTON(SDL_BUTTON_LEFT))
+        btn->state = BTN_PRESSED;
+    else
+        btn->state = BTN_HOVERED;
 }
 
 // Info tag @TODO

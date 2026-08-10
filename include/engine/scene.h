@@ -23,6 +23,7 @@ typedef struct {
 
 int init_scenes(void);
 void destroy_scenes(void);
+Scene* get_current_scene(void);
 
 // Start menu scene
 

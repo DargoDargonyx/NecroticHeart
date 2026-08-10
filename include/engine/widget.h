@@ -31,6 +31,7 @@ typedef struct {
 
 WidgetCont* create_widget_cont();
 void destroy_widget_cont(WidgetCont*);
+int update_widgets(WidgetCont*);
 
 int add_widget_to_cont(WidgetCont*, Widget*);
 int remove_widget_from_cont(WidgetCont*, Widget*);
@@ -53,6 +54,7 @@ typedef struct {
 
 Button* create_button(ButtonType, IntSize, IntPos, const char*, SDL_Color, int);
 void destroy_button(Button*);
+void update_button(Button*);
 
 // Info tag
 
