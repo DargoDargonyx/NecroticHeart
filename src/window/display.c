@@ -1,16 +1,16 @@
 /**
  * @file display.c
  * @author DargoDargonyx
- * @date 08/08/2026
+ * @date 08/11/2026
  */
 
 #include "window/display.h"
-
 #include "util/config.h"
+
 
 static GameWindow* game_window = NULL;
 
-GameWindow* get_game_window() { return game_window; }
+// Game display window
 
 int init_game_window(const char* window_name) {
     if (game_window) return 0;
@@ -61,8 +61,11 @@ int init_game_window(const char* window_name) {
 	return 0;
 }
 
-void destroy_game_window() {
-	if (!game_window) return;
+void destroy_game_window(void) {
+	if (!game_window) {
+		printf(PRINT_WARNING "Could not destroy a null game window struct\n");
+		return;
+	}
 
 	if (game_window->sdl_window) SDL_DestroyWindow(game_window->sdl_window);
     if (game_window->sdl_renderer) SDL_DestroyRenderer(game_window->sdl_renderer);
@@ -70,3 +73,5 @@ void destroy_game_window() {
 	free(game_window);
 	game_window = NULL;
 }
+
+GameWindow* get_game_window(void) { return game_window; }

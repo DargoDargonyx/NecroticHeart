@@ -27,7 +27,7 @@ void destroy_widget(Widget* widget) {
 	}
 }
 
-WidgetCont* create_widget_cont() {
+WidgetCont* create_widget_cont(void) {
 	WidgetCont* cont = malloc(sizeof(WidgetCont));
 	cont->widgets = calloc(INIT_WIDGET_CONT_CAP, sizeof(Widget*));
 	cont->count = 0;

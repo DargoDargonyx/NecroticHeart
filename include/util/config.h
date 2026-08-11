@@ -1,7 +1,7 @@
 /**
  * @file config.h
  * @author DargoDargonyx
- * @date 08/08/2026
+ * @date 08/11/2026
  */
 
 #ifndef CONFIG_H
@@ -9,8 +9,8 @@
 
 #include "util/helper.h"
 
-typedef enum { ENGLISH } PLAYER_LANG_OPTS;
 
+// Config structs
 typedef struct {
     int print_configs;
 } DevOptsConfig;
@@ -32,21 +32,23 @@ typedef struct {
 } ConfigCont;
 
 // General config
-int init_config();
-void destroy_config();
-ConfigCont* get_config();
+int init_config(void);
+void destroy_config(void);
+ConfigCont* get_config(void);
 
 // Dev opts config
-DevOptsConfig* init_dev_opts_config();
+DevOptsConfig* init_dev_opts_config(void);
 void destroy_dev_opts_config(DevOptsConfig*);
 void print_configs(ConfigCont*);
 
 // Display config
-DisplayConfig* init_display_config();
+DisplayConfig* init_display_config(void);
 void destroy_display_config(DisplayConfig*);
 
 // Player info config
-PlayerInfoConfig* init_player_info_config();
+typedef enum { ENGLISH } PLAYER_LANG_OPTS;
+
+PlayerInfoConfig* init_player_info_config(void);
 void destroy_player_info_config(PlayerInfoConfig*);
 
 #endif // CONFIG_H

@@ -1,7 +1,7 @@
 /**
  * @file file.c
  * @author DargoDargonyx
- * @date 08/08/2026
+ * @date 08/11/2026
  */
 
 #include "util/file.h"
@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
 
 // Helper functions
 
@@ -68,43 +69,60 @@ int write_json(cJSON* json, const char* filename) {
 
 // General config
 
-int seed_configs() {
-    int err;
+int seed_configs(void) {
+    if (seed_dev_opts_config()) {
+		printf(PRINT_ERROR "Could not seed the dev opts config file\n");
+		return 1;
+	}
+	if (seed_display_config()) {
+		printf(PRINT_ERROR "Could not seed the display config file\n");
+		return 1;
+	}
+	if (seed_player_info_config()) {
+		printf(PRINT_ERROR "Could not seed the player info config file\n");	
+		return 1;
+	}
 
-    err = seed_dev_opts_config();
-    if (err) return err;
-    err = seed_display_config();
-	if (err) return err;
-	err = seed_player_info_config();
-
-    return err;
+    return 0;
 }
 
 int read_config(ConfigCont* config_cont) {
-    int err;
+    if (read_dev_opts_config(config_cont->dev_opts)) {
+		printf(PRINT_ERROR "Could not read the dev opts config file\n");
+		return 1;
+	}
+    if (read_display_config(config_cont->display)) {
+		printf(PRINT_ERROR "Could not read the display config file\n");
+		return 1;
+	}
+    if (read_player_info_config(config_cont->player_info)) {
+		printf(PRINT_ERROR "Could not read the player info config\n");
+		return 1;
+	}
 
-    err = read_dev_opts_config(config_cont->dev_opts);
-    if (err) return err;
-    err = read_display_config(config_cont->display);
-    if (err) return err;
-    err = read_player_info_config(config_cont->player_info);
-
-    return err;
+    return 0;
 }
 
 int write_config(ConfigCont* config_cont) {
-    int err;
+    if (write_dev_opts_config(config_cont->dev_opts)) {
+		printf(PRINT_ERROR "Could not write to the dev opts config file\n");
+		return 1;
+	}
+	if (write_display_config(config_cont->display)) {
+		printf(PRINT_ERROR "Could not write to the display config file\n");
+		return 1;
+	}
+    if (write_player_info_config(config_cont->player_info)) {
+		printf(PRINT_ERROR "Could not write to the player info config file\n");
+		return 1;
+	}
 
-    err = write_dev_opts_config(config_cont->dev_opts);
-    if (err) return err;
-    err = write_player_info_config(config_cont->player_info);
-
-    return err;
+    return 0;
 }
 
 // Dev opts config
 
-int seed_dev_opts_config() {
+int seed_dev_opts_config(void) {
     if (file_exists(DEV_OPTS_CONFIG_PATH)) return 0;
 
     cJSON* json = cJSON_CreateObject();
@@ -152,7 +170,7 @@ int write_dev_opts_config(DevOptsConfig* dev_opts) {
 
 // Display config
 
-int seed_display_config() {
+int seed_display_config(void) {
     if (file_exists(DISPLAY_CONFIG_PATH)) return 0;
 
     cJSON* json = cJSON_CreateObject();
@@ -221,7 +239,7 @@ int write_display_config(DisplayConfig* display) {
 
 // Player info config
 
-int seed_player_info_config() {
+int seed_player_info_config(void) {
     if (file_exists(PLAYER_INFO_CONFIG_PATH)) return 0;
 
     cJSON* json = cJSON_CreateObject();

@@ -1,7 +1,7 @@
 /**
  * @file scene.c
  * @author DargoDargonyx
- * @date 08/09/2026
+ * @date 08/11/2026
  */
 
 #include "engine/scene.h"
@@ -12,6 +12,8 @@
 
 
 static Scene* start_menu_scene = NULL;
+
+// General scenes
 
 int init_scenes(void) {
 	if (init_start_menu_scene()) return 1;

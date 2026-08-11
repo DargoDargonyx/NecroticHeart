@@ -7,13 +7,14 @@
 #include "window/display.h"
 #include "window/render.h"
 
+
 int update_current_scene(float dt) {
 	Scene* current_scene = get_current_scene();
 	if (update_widgets(current_scene->widget_cont, dt)) return 1;
 	return 0;
 }
 
-int run_game_loop() {
+int run_game_loop(void) {
 	GameWindow* game_window = get_game_window();
 	if (!game_window) {
 		printf(PRINT_ERROR "Could not access the game window when starting the game loop\n");

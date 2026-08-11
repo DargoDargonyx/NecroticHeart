@@ -11,6 +11,7 @@
 
 #include <SDL2/SDL.h>
 
+
 // General widgets
 
 #define INIT_WIDGET_CONT_CAP 31
@@ -29,7 +30,7 @@ typedef struct {
 	int cap;
 } WidgetCont;
 
-WidgetCont* create_widget_cont();
+WidgetCont* create_widget_cont(void);
 void destroy_widget_cont(WidgetCont*);
 int update_widgets(WidgetCont*, float);
 

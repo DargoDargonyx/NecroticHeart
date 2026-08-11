@@ -9,6 +9,6 @@
 
 int update_current_scene(float);
 
-int run_game_loop();
+int run_game_loop(void);
 
 #endif // GAME_H

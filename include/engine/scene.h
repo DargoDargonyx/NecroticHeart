@@ -1,13 +1,16 @@
 /**
  * @file scene.h
  * @author DargoDargonyx
- * @date 08/08/2026
+ * @date 08/11/2026
  */
 
 #ifndef SCENE_H
 #define SCENE_H
 
 #include "engine/widget.h"
+
+
+// General scenes
 
 typedef enum {
 	START_MENU_SCENE,

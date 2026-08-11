@@ -8,11 +8,15 @@
 #include "window/display.h"
 
 
-int render_current_scene() {
+// Scenes
+
+int render_current_scene(void) {
 	Scene* current_scene = get_current_scene();
 	if (render_widgets(current_scene->widget_cont)) return 1;
 	return 0;
 }
+
+// Widgets
 
 int render_widgets(WidgetCont* cont) {
 	if (!cont) {
@@ -33,6 +37,7 @@ int render_widgets(WidgetCont* cont) {
 				return 1;
 		}
 	}
+
 	return 0;
 }
 
