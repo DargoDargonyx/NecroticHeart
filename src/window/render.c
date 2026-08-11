@@ -1,12 +1,11 @@
 /**
  * @file render.c
  * @author DargoDargonyx
- * @date 08/09/2026
+ * @date 08/11/2026
  */
 
 #include "window/render.h"
 #include "window/display.h"
-#include "util/font.h"
 
 
 int render_current_scene() {
@@ -39,51 +38,43 @@ int render_widgets(WidgetCont* cont) {
 
 int render_button(Button* btn) {
 	GameWindow* game_window = get_game_window();
-	GlobalFonts* global_fonts = get_global_fonts();
-
-    SDL_Rect src = {
-        0,
-        btn->state * btn->sdl_rect.h * 2,
-        btn->sdl_rect.w * 2,
-        btn->sdl_rect.h * 2
-    };
-
-    SDL_RenderCopy(
-        game_window->sdl_renderer,
-        btn->background,
-        &src,
-        &btn->sdl_rect
-    );
-
-	SDL_Surface* surface = TTF_RenderUTF8_Blended(
-		global_fonts->fonts[btn->font_num], 
-		btn->text, 
-		btn->text_color
-	);
-
-	SDL_Texture* text_texture = SDL_CreateTextureFromSurface(
-		game_window->sdl_renderer, 
-		surface
-	);
-
-	if (!text_texture) { 
-		printf(PRINT_ERROR "Button text texture loading failed\n");
+	if (!game_window) {
+		printf(PRINT_ERROR "Could not access the game window while rendering a button\n");
 		return 1;
 	}
 
+	int spritesheet_offset = btn->state == BTN_IDLE ? 0 : 1;
+	SDL_Rect dst = btn->sdl_rect;
+	dst.y += (int) btn->press_offset;
+
+    SDL_Rect src = {
+        .x = 0,
+        .y = spritesheet_offset * btn->sdl_rect.h * BTN_PIXEL_SCALE_OFFSET,
+        .w = btn->sdl_rect.w * BTN_PIXEL_SCALE_OFFSET,
+        .h = btn->sdl_rect.h * BTN_PIXEL_SCALE_OFFSET
+    };
+    SDL_RenderCopy(
+        game_window->sdl_renderer,
+        btn->sdl_background_texture,
+        &src,
+        &dst
+    );
+
 	int text_w, text_h;
-	SDL_QueryTexture(text_texture, NULL, NULL, &text_w, &text_h);
+	SDL_QueryTexture(btn->sdl_text_texture, NULL, NULL, &text_w, &text_h);
 	SDL_Rect text_rect = {
 		.x = btn->sdl_rect.x + (btn->sdl_rect.w - text_w) / 2,
-        .y = btn->sdl_rect.y + (btn->sdl_rect.h - text_h) / 2,
+        .y = btn->sdl_rect.y + (int) btn->press_offset + (btn->sdl_rect.h - text_h) / 2,
         .w = text_w,
         .h = text_h
 	};
+	SDL_RenderCopy(
+		game_window->sdl_renderer, 
+		btn->sdl_text_texture, 
+		NULL, 
+		&text_rect
+	);
 
-	SDL_RenderCopy(game_window->sdl_renderer, text_texture, NULL, &text_rect);
-
-	SDL_DestroyTexture(text_texture);
-	SDL_FreeSurface(surface);
 	return 0;
 }
 
