@@ -12,18 +12,20 @@
 #include <SDL2/SDL.h>
 
 
-// General widgets
+// Helper functions
+int is_mouse_over_screen_pixels(SDL_Rect);
 
+// General widgets
 #define INIT_WIDGET_CONT_CAP 31
 
 typedef enum { BUTTON, INFO_TAG } WidgetType;
-
 typedef struct {
 	WidgetType type;
 } Widget;
 
 void destroy_widget(Widget*);
 
+// Widget container
 typedef struct {
 	Widget** widgets;
 	int count;
@@ -32,18 +34,19 @@ typedef struct {
 
 WidgetCont* create_widget_cont(void);
 void destroy_widget_cont(WidgetCont*);
-int update_widgets(WidgetCont*, float);
-
 int add_widget_to_cont(WidgetCont*, Widget*);
 int remove_widget_from_cont(WidgetCont*, Widget*);
 
-// Buttons
+// Collective widgets
+int update_widgets(WidgetCont*, float);
+void handle_widget_events(WidgetCont*, SDL_Event*);
 
+// Buttons
 #define BTN_PIXEL_SCALE_OFFSET 2
 
 typedef enum { LONG_TRANSPARENT_BTN } ButtonType;
 typedef enum { BTN_IDLE, BTN_HOVER, BTN_PRESSED } ButtonState;
-
+typedef void (*ButtonCallback)(void);
 typedef struct {
 	Widget base;
 	ButtonState state;
@@ -58,14 +61,16 @@ typedef struct {
 	
 	float press_offset;
 	float press_animation_speed;
+	ButtonCallback on_click;
 } Button;
 
-Button* create_button(ButtonType, IntSize, IntPos, const char*, SDL_Color, int);
+Button* create_button(ButtonType, IntSize, IntPos, const char*, 
+		SDL_Color, int, float, float, ButtonCallback);
 void destroy_button(Button*);
 int update_button(Button*, float);
+void handle_button_event(Button*, SDL_Event*);
 
 // Info tag
-
 typedef struct {
 	Widget base;
 	SDL_Rect sdl_rect;
@@ -73,5 +78,6 @@ typedef struct {
 
 InfoTag* create_info_tag(IntSize, IntPos);
 void destroy_info_tag(InfoTag*);
+int update_info_tag(InfoTag*, float);
 
 #endif // WIDGET_H

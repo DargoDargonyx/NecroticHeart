@@ -4,14 +4,45 @@
  * @date 08/11/2026
  */
 
+#include "engine/game.h"
 #include "window/display.h"
 #include "window/render.h"
+#include "util/font.h"
 
+#include <SDL2/SDL_ttf.h>
 
-int update_current_scene(float dt) {
-	Scene* current_scene = get_current_scene();
-	if (update_widgets(current_scene->widget_cont, dt)) return 1;
+int init_game(void) {
+	SDL_Init(SDL_INIT_VIDEO);
+    
+	if (init_game_window(GAME_NAME)) {
+		printf(PRINT_ERROR "Could not initialize game window\n");
+        quit_game();
+		return 1;
+    }
+
+	TTF_Init();
+	if (init_global_fonts()) {
+		printf(PRINT_ERROR "Could not initialize global fonts\n");
+		quit_game();
+		return 1;
+	}
+
+	if (init_scenes()) {
+		printf(PRINT_ERROR "Could not initialize game scenes\n");
+		quit_game();
+		return 1;
+	}
+
 	return 0;
+}
+
+void quit_game(void) {
+	if (get_current_scene()) destroy_scenes();
+	if (get_global_fonts()) destroy_global_fonts();
+	if (get_game_window()) destroy_game_window();
+
+    SDL_Quit();
+	exit(EXIT_SUCCESS);
 }
 
 int run_game_loop(void) {
@@ -28,14 +59,18 @@ int run_game_loop(void) {
 		Uint64 now = SDL_GetPerformanceCounter();
 		float dt = (float) (now - last) / (float) SDL_GetPerformanceFrequency();
 		last = now;
+	
+		Scene* current_scene = get_current_scene();
 
 		// Events
 		while (SDL_PollEvent(&event)) {
 			if (event.type == SDL_QUIT) game_window->running = 0;
+
+			handle_widget_events(current_scene->widget_cont, &event);
 		}
 
 		// Update
-		if (update_current_scene(dt)) {
+		if (update_widgets(current_scene->widget_cont, dt)) {
 			game_window->running = 0;
 			printf(PRINT_ERROR "Could not update the current game scene\n");
 			err = 1;

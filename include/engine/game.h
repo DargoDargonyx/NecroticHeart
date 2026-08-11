@@ -7,7 +7,10 @@
 #ifndef GAME_H
 #define GAME_H
 
-int update_current_scene(float);
+#define GAME_NAME "NecroticHeart"
+
+int init_game(void);
+void quit_game(void);
 
 int run_game_loop(void);
 

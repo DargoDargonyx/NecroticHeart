@@ -12,7 +12,34 @@
 #include <stdlib.h>
 
 
-// General widgets
+// @brief Helper functions
+
+int is_mouse_over_screen_pixels(SDL_Rect area) {	
+	GameWindow* game_window = get_game_window();
+	if (!game_window) {
+		printf(PRINT_ERROR "Could not access the game window while checking if "
+				"the mouse was over a specifc screen area\n");
+		return 1;
+	}
+
+	int x, y;
+    SDL_GetMouseState(&x, &y);
+	FloatPos logical_pos;
+	SDL_RenderWindowToLogical(
+		game_window->sdl_renderer,
+		x,
+		y,
+		&logical_pos.x,
+		&logical_pos.y
+	);
+
+	return logical_pos.x >= area.x
+		&& logical_pos.x < area.x + area.w
+		&& logical_pos.y >= area.y
+		&& logical_pos.y < area.y + area.h;
+}
+
+// @brief General widgets
 
 void destroy_widget(Widget* widget) {
 	switch (widget->type) {
@@ -26,6 +53,8 @@ void destroy_widget(Widget* widget) {
 			break;
 	}
 }
+
+// @brief Widget containers
 
 WidgetCont* create_widget_cont(void) {
 	WidgetCont* cont = malloc(sizeof(WidgetCont));
@@ -45,26 +74,6 @@ void destroy_widget_cont(WidgetCont* cont) {
 	}
 	free(cont->widgets);
 	free(cont);
-}
-
-int update_widgets(WidgetCont* cont, float dt) {
-	int err = 0;
-
-	for (int i = 0; i < cont->count; i++) {
-		switch (cont->widgets[i]->type) {
-			case BUTTON:
-				err = update_button((Button*) cont->widgets[i], dt);
-				break;
-			case INFO_TAG:
-				// @TODO
-				break;
-			default:
-				printf(PRINT_ERROR "Could not update a widget with an unknown type\n");
-				return 1;
-		}
-	}
-
-	return err;
 }
 
 int add_widget_to_cont(WidgetCont* cont, Widget* widget) {
@@ -112,8 +121,8 @@ int remove_widget_from_cont(WidgetCont* cont, Widget* widget) {
 		if (removed) cont->widgets[i] = cont->widgets[i + 1];
 
 		if (i == cont->count - 1 && !removed) {
-			printf(PRINT_ERROR "Could not remove a widget from a widget container that"
-					" doesn't contain it\n");
+			printf(PRINT_ERROR "Could not remove a widget from a widget container that "
+					"doesn't contain it\n");
 			return 1;
 		}
 	}
@@ -121,10 +130,54 @@ int remove_widget_from_cont(WidgetCont* cont, Widget* widget) {
 	return 0;
 }
 
-// Buttons
+// @brief Collective widgets
+
+int update_widgets(WidgetCont* cont, float dt) {
+	for (int i = 0; i < cont->count; i++) {
+		switch (cont->widgets[i]->type) {
+			case BUTTON:
+				if (update_button((Button*) cont->widgets[i], dt)) {
+					printf(PRINT_ERROR "Failed to update a button widget\n");
+					return 1;
+				}
+				break;
+			case INFO_TAG:
+				if (update_info_tag((InfoTag*) cont->widgets[i], dt)) {
+					printf(PRINT_ERROR "Failed to update an info tag widget\n");
+					return 1;
+				}
+				break;
+			default:
+				printf(PRINT_ERROR "Could not update a widget with an unknown type\n");
+				return 1;
+		}
+	}
+
+	return 0;
+}
+
+void handle_widget_events(WidgetCont* cont, SDL_Event* event) {
+	for (int i = 0; i < cont->count; i++) {
+		switch (cont->widgets[i]->type) {
+			case BUTTON:
+				handle_button_event((Button*) cont->widgets[i], event);
+				break;
+			case INFO_TAG:
+				break;
+			default:
+				printf(PRINT_ERROR "Could not handle an event for a widget with " 
+					   "an unknown type\n");
+				break;
+		}
+	}
+}
+
+
+// @brief Buttons
 
 Button* create_button(ButtonType type, IntSize size, IntPos pos, 
-		const char* text, SDL_Color text_color, int font_num) {
+		const char* text, SDL_Color text_color, int font_num, float press_offset, 
+		float press_animation_speed, ButtonCallback on_click) {
 	
 	Button* btn = malloc(sizeof(Button));
 	GameWindow* game_window = get_game_window();
@@ -163,8 +216,9 @@ Button* create_button(ButtonType type, IntSize size, IntPos pos,
 	btn->text = text;
 	btn->text_color = text_color;
 	btn->font_num = font_num;
-	btn->press_offset = 10;
-	btn->press_animation_speed = 80.0f;
+	btn->press_offset = press_offset;
+	btn->press_animation_speed = press_animation_speed;
+	btn->on_click = on_click;
 
 	// SDL textures
 	SDL_Surface* surface = TTF_RenderUTF8_Blended(
@@ -199,34 +253,6 @@ void destroy_button(Button* btn) {
 }
 
 int update_button(Button* btn, float dt) {
-	GameWindow* game_window = get_game_window();
-	if (!game_window) {
-		printf(PRINT_ERROR "Could not access the game window while updating a button\n");
-		return 1;
-	}
-
-	// Hover detection
-	int mouse_x, mouse_y;
-    Uint32 mouse_state = SDL_GetMouseState(&mouse_x, &mouse_y);
-	float logical_mouse_x, logical_mouse_y;
-	SDL_RenderWindowToLogical(
-		game_window->sdl_renderer,
-		mouse_x,
-		mouse_y,
-		&logical_mouse_x,
-		&logical_mouse_y
-	);
-
-	int hovering = logical_mouse_x >= btn->sdl_rect.x 
-		&& logical_mouse_x < btn->sdl_rect.x + btn->sdl_rect.w
-		&& logical_mouse_y >= btn->sdl_rect.y
-		&& logical_mouse_y < btn->sdl_rect.y + btn->sdl_rect.h;
-
-    if (!hovering) btn->state = BTN_IDLE;
-    else if (mouse_state & SDL_BUTTON(SDL_BUTTON_LEFT)) btn->state = BTN_PRESSED;
-    else btn->state = BTN_HOVER;
-
-	// Button press animation
 	float target_offset = btn->state == BTN_PRESSED ? 4.0f : 0.0f;
 
     if (btn->press_offset < target_offset) {
@@ -240,8 +266,28 @@ int update_button(Button* btn, float dt) {
 	return 0;
 }
 
-// Info tag @TODO
+void handle_button_event(Button* btn, SDL_Event* event) {
+	if (btn->state == BTN_PRESSED && event->type == SDL_MOUSEBUTTONUP) {
+		if (btn->on_click) btn->on_click();
+		else printf(PRINT_WARNING "Player attempted to click a button that has no callback\n");
+	}
+
+	int left_btn_pressed = event->type == SDL_MOUSEBUTTONDOWN 
+		&& event->button.button == SDL_BUTTON_LEFT;
+	int hovering = is_mouse_over_screen_pixels(btn->sdl_rect);
+
+	if (hovering) {
+		if (left_btn_pressed) btn->state = BTN_PRESSED;
+		else btn->state = BTN_HOVER;
+	} else {
+		btn->state = BTN_IDLE;
+	}
+}
+
+// @brief Info tag @TODO
 
 InfoTag* create_info_tag(IntSize size, IntPos pos) {}
 
 void destroy_info_tag(InfoTag* info_tag) {}
+
+int update_info_tag(InfoTag* info_tag, float dt) {}
