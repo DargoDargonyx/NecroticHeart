@@ -166,7 +166,7 @@ void handle_widget_events(WidgetCont* cont, SDL_Event* event) {
 				break;
 			default:
 				printf(PRINT_ERROR "Could not handle an event for a widget with " 
-					   "an unknown type\n");
+						"an unknown type\n");
 				break;
 		}
 	}

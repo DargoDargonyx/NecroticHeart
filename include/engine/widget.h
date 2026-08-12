@@ -61,6 +61,7 @@ typedef struct {
 	
 	float press_offset;
 	float press_animation_speed;
+
 	ButtonCallback on_click;
 } Button;
 

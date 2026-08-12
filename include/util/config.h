@@ -12,7 +12,7 @@
 
 // Config structs
 typedef struct {
-    int print_configs;
+	int print_configs;
 } DevOptsConfig;
 
 typedef struct {
@@ -21,25 +21,25 @@ typedef struct {
 } DisplayConfig;
 
 typedef struct {
-    char* username;
-    char* language;
+	char* username;
+	char* language;
 } PlayerInfoConfig;
 
 typedef struct {
-    DevOptsConfig* dev_opts;
+	DevOptsConfig* dev_opts;
 	DisplayConfig* display;
-    PlayerInfoConfig* player_info;
-} ConfigCont;
+	PlayerInfoConfig* player_info;
+} ConfigManager;
 
 // General config
-int init_config(void);
-void destroy_config(void);
-ConfigCont* get_config(void);
+int init_config_manager(void);
+void destroy_config_manager(void);
+ConfigManager* get_config_manager(void);
 
 // Dev opts config
 DevOptsConfig* init_dev_opts_config(void);
 void destroy_dev_opts_config(DevOptsConfig*);
-void print_configs(ConfigCont*);
+int print_configs(void);
 
 // Display config
 DisplayConfig* init_display_config(void);

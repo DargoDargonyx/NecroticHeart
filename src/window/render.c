@@ -8,14 +8,6 @@
 #include "window/display.h"
 
 
-// Scenes
-
-int render_current_scene(void) {
-	Scene* current_scene = get_current_scene();
-	if (render_widgets(current_scene->widget_cont)) return 1;
-	return 0;
-}
-
 // Widgets
 
 int render_widgets(WidgetCont* cont) {
@@ -27,10 +19,10 @@ int render_widgets(WidgetCont* cont) {
 	for (int i = 0; i < cont->count; i++) {
 		switch (cont->widgets[i]->type) {
 			case BUTTON:
-				render_button((Button*) cont->widgets[i]);
+				if (render_button((Button*) cont->widgets[i])) return 1;
 				break;
 			case INFO_TAG:
-				render_info_tag((InfoTag*) cont->widgets[i]);
+				if (render_info_tag((InfoTag*) cont->widgets[i])) return 1;
 				break;
 			default:
 				printf(PRINT_ERROR "Could not render a widget of unknown type\n");

@@ -8,7 +8,6 @@
 #define DISPLAY_H
 
 #include "util/helper.h"
-#include "engine/scene.h"
 
 #include <SDL2/SDL.h>
 
@@ -23,7 +22,6 @@ typedef struct {
     SDL_Window* sdl_window;
 	SDL_Renderer* sdl_renderer;
 	
-	SceneType current_scene;
     int running;
 } GameWindow;
 

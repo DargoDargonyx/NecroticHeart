@@ -13,12 +13,26 @@ static GameWindow* game_window = NULL;
 // Game display window
 
 int init_game_window(const char* window_name) {
-    if (game_window) return 0;
-    game_window = malloc(sizeof(GameWindow));
+    if (game_window) {
+		printf(PRINT_WARNING "Attempting to initialize the game window when it has "
+				"already been initialized\n");
+		return 0;
+	}
+	game_window = malloc(sizeof(GameWindow));
 
-	ConfigCont* config = get_config();
+	ConfigManager* config_manager = get_config_manager();
+	if (!config_manager) {
+		printf(PRINT_ERROR "Could not initialize the game window with a null "
+				"config manager\n");
+		return 1;
+	}
+	if (!config_manager->display) {
+		printf(PRINT_ERROR "Could not initialize the game window with a null "
+				"display field in the config manager\n");
+		return 1;
+	}
 
-	if (config->display->fullscreen) {
+	if (config_manager->display->fullscreen) {
 		game_window->sdl_window = SDL_CreateWindow(
 			window_name,
 			SDL_WINDOWPOS_CENTERED,
@@ -28,7 +42,7 @@ int init_game_window(const char* window_name) {
 			SDL_WINDOW_FULLSCREEN_DESKTOP
 		);
 	} else {
-		game_window->resolution = config->display->resolution;
+		game_window->resolution = config_manager->display->resolution;
 		game_window->sdl_window = SDL_CreateWindow(
 			window_name, 
 			SDL_WINDOWPOS_CENTERED, 
@@ -40,9 +54,9 @@ int init_game_window(const char* window_name) {
 	}
 
 	if (!game_window->sdl_window) {
-        fprintf(stderr, "SDL_CreateWindow failed: %s\n", SDL_GetError());
-        return 1;
-    }
+		printf(PRINT_ERROR "SDL_CreateWindow failed: %s\n", SDL_GetError());
+		return 1;
+	}
 
 	game_window->sdl_renderer = SDL_CreateRenderer(
 		game_window->sdl_window,
@@ -56,14 +70,13 @@ int init_game_window(const char* window_name) {
 		WINDOW_RENDER_LOGICAL_SIZE_Y
 	);
 
-	game_window->current_scene = START_MENU_SCENE;
 	game_window->running = 1;
 	return 0;
 }
 
 void destroy_game_window(void) {
 	if (!game_window) {
-		printf(PRINT_WARNING "Could not destroy a null game window struct\n");
+		printf(PRINT_WARNING "Attempting to destroy a null game window\n");
 		return;
 	}
 

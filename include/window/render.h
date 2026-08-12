@@ -7,9 +7,6 @@
 #include "engine/widget.h"
 
 
-// Scenes
-int render_current_scene(void);
-
 // Widgets
 int render_widgets(WidgetCont*);
 int render_button(Button*);

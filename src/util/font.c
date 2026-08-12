@@ -11,7 +11,11 @@
 static GlobalFonts* global_fonts = NULL;
 
 int init_global_fonts(void) {
-	if (global_fonts) return 1;
+	if (global_fonts) {
+		printf(PRINT_WARNING "Attempting to initialize the global fonts when they "
+			   "have already been initialized\n");
+		return 0;
+	}
 
 	global_fonts = malloc(sizeof(GlobalFonts));
 	global_fonts->fonts = calloc(GLOBAL_FONT_COUNT, sizeof(TTF_Font*));
@@ -30,12 +34,16 @@ int init_global_fonts(void) {
 
 void destroy_global_fonts(void) {
 	if (!global_fonts) {
-		printf(PRINT_WARNING "Could not destroy a null global font struct pointer\n");
+		printf(PRINT_WARNING "Attempting to destroy a null global fonts manager\n");
 		return;
 	}
 
-	for (int i = 0; i < GLOBAL_FONT_COUNT; i++) TTF_CloseFont(global_fonts->fonts[i]);
-	free(global_fonts->fonts);
+	if (global_fonts->fonts) {
+		for (int i = 0; i < GLOBAL_FONT_COUNT; i++) 
+			TTF_CloseFont(global_fonts->fonts[i]);
+		free(global_fonts->fonts);
+	}
+
 	free(global_fonts);
 	global_fonts = NULL;
 }

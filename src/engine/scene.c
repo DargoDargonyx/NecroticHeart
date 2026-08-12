@@ -5,159 +5,221 @@
  */
 
 #include "engine/scene.h"
-#include "window/display.h"
 #include "engine/game.h"
 #include "util/font.h"
 
 #include <stdlib.h>
 
 
-static Scene* start_menu_scene = NULL;
-static Scene* settings_menu_scene = NULL;
-static Scene* play_scene = NULL;
-
-// General scenes
-
-int init_scenes(void) {
-	if (init_start_menu_scene()) return 1;
-	if (init_settings_menu_scene()) return 1;
-	if (init_play_scene()) return 1;
-
-	return 0;
-}
-
-void destroy_scenes(void) {
-	destroy_start_menu_scene();	
-}
-
-Scene* get_current_scene(void) {
-	GameWindow* game_window = get_game_window();
-	if (!game_window) {
-		printf(PRINT_ERROR 
-			   "Could not access the game window when grabbing the current scene\n");
-		return NULL;
-	}
-
-	switch (game_window->current_scene) {
-		case START_MENU_SCENE: return get_start_menu_scene();
-		case SETTINGS_MENU_SCENE: return get_settings_menu_scene();
-		case PLAY_SCENE: return get_play_scene();
-		case INVENTORY_SCENE: // @TODO
-		default:
-			printf(PRINT_ERROR 
-				   "Could not grab the current scene because its type is unknown\n");
-			return NULL;
-	}
-}
-
-void destroy_current_scene(void) {
-	GameWindow* game_window = get_game_window();
-	if (!game_window) {
-		printf(PRINT_ERROR 
-			   "Could not access the game window when destroying the current scene\n");
-		return;
-	}
-
-	switch (game_window->current_scene) {
-		case START_MENU_SCENE: destroy_start_menu_scene();
-		case SETTINGS_MENU_SCENE: destroy_settings_menu_scene();
-		case PLAY_SCENE: destroy_play_scene();
-		case INVENTORY_SCENE: //@TODO
-		default:
-			printf(PRINT_ERROR 
-				   "Could not destroy the current scene because its type is unknown\n");
-	}
-
-}
+static SceneManager* scene_manager = NULL;
 
 // Start menu scene
 
 int init_start_menu_scene(void) {
-	if (start_menu_scene) return 1;
-
-	start_menu_scene = malloc(sizeof(Scene));
-	start_menu_scene->type = START_MENU_SCENE;
-	start_menu_scene->widget_cont = create_widget_cont();
+	Scene* scene = malloc(sizeof(Scene));
+	scene->type = START_MENU_SCENE;
+	scene->widget_cont = create_widget_cont();
+	scene->destroy = destroy_start_menu_scene;
 
 	SDL_Color white = {255, 255, 255, 255};
 	
 	// Menu buttons
-	Button* start_btn = create_button(
+	Button* play_btn = create_button(
 		LONG_TRANSPARENT_BTN,
-		(IntSize) {.w = 650, .h = 130},
-		(IntPos) {.x = 130, .y = 390},
-		"Start",
+		(IntSize) { .w = 650, .h = 130 },
+		(IntPos) { .x = 130, .y = 390 },
+		"Play",
 		white,
 		GLOBAL_FONT_START_MENU_BTN,
 		20.0f,
 		100.0f,
-		switch_scene_to_start
+		request_switch_to_play_scene
 	);
-	if (add_widget_to_cont(start_menu_scene->widget_cont, (Widget*) start_btn)) 
+	if (add_widget_to_cont(scene->widget_cont, (Widget*) play_btn)) 
 		return 1;
 
 	Button* settings_btn = create_button(
 		LONG_TRANSPARENT_BTN,
-		(IntSize) {.w = 650, .h = 130},
-		(IntPos) {.x = 130, .y = 585},
+		(IntSize) { .w = 650, .h = 130 },
+		(IntPos) { .x = 130, .y = 585 },
 		"Settings",
 		white,
 		GLOBAL_FONT_START_MENU_BTN,
 		20.0f,
 		100.0f,
-		switch_scene_to_settings
+		request_switch_to_settings_scene
 	);
-	if (add_widget_to_cont(start_menu_scene->widget_cont, (Widget*) settings_btn)) 
+	if (add_widget_to_cont(scene->widget_cont, (Widget*) settings_btn)) 
 		return 1;
 
 	Button* quit_btn = create_button(
 		LONG_TRANSPARENT_BTN,
-		(IntSize) {.w = 650, .h = 130},
-		(IntPos) {.x = 130, .y = 780},
+		(IntSize) { .w = 650, .h = 130 },
+		(IntPos) { .x = 130, .y = 780 },
 		"Quit",
 		white,
 		GLOBAL_FONT_START_MENU_BTN,
 		20.0f,
 		100.0f,
-		quit_game
+		exit_game_successfully
 	);
-	if (add_widget_to_cont(start_menu_scene->widget_cont, (Widget*) quit_btn))
+	if (add_widget_to_cont(scene->widget_cont, (Widget*) quit_btn))
 		return 1;
+
+	scene_manager->current_scene = scene;
+	return 0;
+}
+
+void destroy_start_menu_scene(Scene* self) { 
+	if (!self) {
+		printf(PRINT_WARNING "Attempted to destroy a null scene\n");
+		return;
+	}
+
+	if (self->widget_cont) destroy_widget_cont(self->widget_cont);
+	free(self); 
+}
+
+void request_switch_to_start_scene(void) {
+	if (scene_manager->current_scene_type == START_MENU_SCENE) {
+		printf(PRINT_WARNING "Attempting to switch scene to start menu when " 
+				"already on the start menu scene\n");
+		return;
+	}
+
+	scene_manager->requested_scene_type = START_MENU_SCENE;
+	scene_manager->scene_switch_requested = 1;
+}
+
+// Settings menu scene
+
+int init_settings_menu_scene(void) {
+	Scene* scene = malloc(sizeof(Scene));
+	scene->type = SETTINGS_MENU_SCENE;
+	scene->widget_cont = create_widget_cont();
+	scene->destroy = destroy_settings_menu_scene;
+
+	scene_manager->current_scene = scene;
+	return 0;
+}
+
+void destroy_settings_menu_scene(Scene* self) {
+	if (!self) {
+		printf(PRINT_WARNING "Attempted to destroy a null scene\n");
+		return;
+	}
+
+	if (self->widget_cont) destroy_widget_cont(self->widget_cont);
+	free(self); 
+}
+
+void request_switch_to_settings_scene(void) {
+	if (scene_manager->current_scene_type == SETTINGS_MENU_SCENE) {
+		printf(PRINT_WARNING "Attempting to switch scene to settings menu when " 
+				"already on the settings menu scene\n");
+		return;
+	}
+
+	scene_manager->requested_scene_type = SETTINGS_MENU_SCENE;
+	scene_manager->scene_switch_requested = 1;
+}
+
+// Play scene
+
+int init_play_scene(void) {
+	Scene* scene = malloc(sizeof(Scene));
+	scene->type = PLAY_SCENE;
+	scene->widget_cont = create_widget_cont();
+	scene->destroy = destroy_play_scene;
+
+	scene_manager->current_scene = scene;
+	return 0;
+}
+
+void destroy_play_scene(Scene* self) {
+	if (!self) {
+		printf(PRINT_WARNING "Attempted to destroy a null scene\n");
+		return;
+	}
+
+	if (self->widget_cont) destroy_widget_cont(self->widget_cont);
+	free(self);
+}
+
+void request_switch_to_play_scene(void) {
+	if (scene_manager->current_scene_type == PLAY_SCENE) {
+		printf(PRINT_WARNING "Attempting to switch scene to play when " 
+				"already on the play scene\n");
+		return;
+	}
+
+	scene_manager->requested_scene_type = PLAY_SCENE;
+	scene_manager->scene_switch_requested = 1;
+}
+
+// Scene manager
+
+int init_scene_manager(void) {
+	if (scene_manager) {
+		printf(PRINT_WARNING "Attempted to initialize the scene manager when one "
+				"has already been initialized\n");
+
+		return 0;
+	}
+
+	scene_manager = malloc(sizeof(SceneManager));
+	scene_manager->current_scene_type = START_MENU_SCENE;
+	scene_manager->current_scene = NULL;
+	return init_current_scene();
+}
+
+void destroy_scene_manager(void) {
+	if (!scene_manager) {
+		printf(PRINT_WARNING "Attempting to destroy a null scene manager\n");
+		return;
+	}
+
+	if (scene_manager->current_scene) {
+		scene_manager->current_scene->destroy(scene_manager->current_scene);
+		scene_manager->current_scene = NULL;
+	}
+	
+	free(scene_manager);
+	scene_manager = NULL;
+}
+
+SceneManager* get_scene_manager(void) { return scene_manager; }
+
+int init_current_scene(void) {
+	if (!scene_manager) {
+		printf(PRINT_ERROR 
+				"Could not initialize current scene when scene manager is null\n");
+		return 1;
+	}
+	if (scene_manager->current_scene) {
+		printf(PRINT_ERROR "Could not initialize the current scene because the "
+				"scene manager already has a current scene\n");
+		return 1;
+	}
+
+	switch (scene_manager->current_scene_type) {
+		case START_MENU_SCENE:	  return init_start_menu_scene();
+		case SETTINGS_MENU_SCENE: return init_settings_menu_scene();
+		case PLAY_SCENE:		  return init_play_scene();
+		default:
+			printf(PRINT_ERROR "Could not initialize the current scene because its " 
+					"type is unknown\n");
+			return 1;
+	}
 
 	return 0;
 }
 
-void destroy_start_menu_scene(void) { 
-	if (!start_menu_scene) return;
-	if (start_menu_scene->widget_cont) 
-		destroy_widget_cont(start_menu_scene->widget_cont);
+int apply_scene_switch_request(void) {
+	scene_manager->current_scene_type = scene_manager->requested_scene_type;
+	scene_manager->scene_switch_requested = 0;
+	scene_manager->current_scene->destroy(scene_manager->current_scene);
+	scene_manager->current_scene = NULL;
 
-	free(start_menu_scene); 
-	start_menu_scene = NULL;
+	return init_current_scene();
 }
-
-Scene* get_start_menu_scene(void) { return start_menu_scene; }
-
-void switch_scene_to_start(void) {
-
-}
-
-// Settings meny scene
-
-int init_settings_menu_scene(void) {}
-
-void destroy_settings_menu_scene(void) {}
-
-Scene* get_settings_menu_scene(void) { return settings_menu_scene; }
-
-void switch_scene_to_settings(void) {}
-
-// Play scene
-
-int init_play_scene(void) {}
-
-void destroy_play_scene(void) {}
-
-Scene* get_play_scene(void) { return play_scene; }
-
-void switch_scene_to_play(void) {}
