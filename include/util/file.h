@@ -40,4 +40,8 @@ int seed_player_info_config(void);
 int read_player_info_config(void);
 int write_player_info_config(void);
 
+// Tile definitions
+cJSON* load_tile_definition(const char*);
+
+
 #endif // FILE_H

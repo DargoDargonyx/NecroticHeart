@@ -385,3 +385,19 @@ int write_player_info_config(void) {
 	cJSON_Delete(json);
 	return err;
 }
+
+// Tile definitions
+
+cJSON* load_tile_definition(const char* filepath) {
+	char* json_text = read_json(filepath);
+	cJSON* tile_json = cJSON_Parse(json_text);
+
+	if (!tile_json) {
+		printf(PRINT_ERROR "Could not load a tile definition json file\n");
+		free(json_text);
+		return NULL;
+	}
+
+	free(json_text);
+	return tile_json;
+}

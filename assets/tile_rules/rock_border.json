@@ -1,0 +1,111 @@
+{
+	"name": "rock_border",
+	"id": 2,
+	"layer": 2,
+	"rules": [
+		{
+			"when": {
+				"N":	"edge",
+				"NE": "edge",
+				"E":	"self",
+				"SE": "other",
+				"S":	"self",
+				"SW": "edge",
+				"W":	"edge",
+				"NW": "edge"
+			},
+			"sprites": [0]
+		},
+		{
+			"when": {
+				"N":	"edge",
+				"NE": "edge",
+				"E":	"self",
+				"SE": "any",
+				"S":	"other",
+				"SW": "any",
+				"W":	"self",
+				"NW": "edge"
+			},
+			"sprites": [1]
+		},
+		{
+			"when": {
+				"N":	"edge",
+				"NE": "edge",
+				"E":	"edge",
+				"SE": "edge",
+				"S":	"self",
+				"SW": "other",
+				"W":	"self",
+				"NW": "edge"
+			},
+			"sprites": [2]
+		},
+		{
+			"when": {
+				"N":	"self",
+				"NE": "any",
+				"E":	"other",
+				"SE": "any",
+				"S":	"self",
+				"SW": "edge",
+				"W":	"edge",
+				"NW": "edge"
+			},
+			"sprites": [3]
+		},
+		{
+			"when": {
+				"N":	"self",
+				"NE": "edge",
+				"E":	"edge",
+				"SE": "edge",
+				"S":	"self",
+				"SW": "any",
+				"W":	"other",
+				"NW": "any"
+			},
+			"sprites": [5]
+		},
+		{
+			"when": {
+				"N":	"self",
+				"NE": "other",
+				"E":	"self",
+				"SE": "edge",
+				"S":	"edge",
+				"SW": "edge",
+				"W":	"edge",
+				"NW": "edge"
+			},
+			"sprites": [6]
+		},
+		{
+			"when": {
+				"N":	"other",
+				"NE": "any",
+				"E":	"self",
+				"SE": "edge",
+				"S":	"edge",
+				"SW": "edge",
+				"W":	"self",
+				"NW": "any"
+			},
+			"sprites": [7]
+		},
+		{
+			"when": {
+				"N":	"self",
+				"NE": "edge",
+				"E":	"edge",
+				"SE": "edge",
+				"S":	"edge",
+				"SW": "edge",
+				"W":	"self",
+				"NW": "other"
+			},
+			"sprites": [8]
+		}
+	]
+}

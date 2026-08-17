@@ -10,6 +10,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
 
 int check_args(int argc, char** argv) {
@@ -27,6 +28,9 @@ int main(int argc, char** argv) {
 		printf(PRINT_ERROR "Could not initialize the game\n");
 		quit_game(EXIT_SUCCESS);
 	}
+
+	// Seed random generator
+	srand((unsigned int) time(NULL));
 
 	// Handle config information
 	ConfigManager* config_manager = get_config_manager();

@@ -1,0 +1,125 @@
+{
+	"name": "grass",
+	"id": 1,
+	"layer": 1,
+	"sprites": [],
+	"rules": [
+		{
+			"when": {
+				"N":	"other",
+				"NE": "other",
+				"E":	"self",
+				"SE": "any",
+				"S":	"self",
+				"SW": "other",
+				"W":	"other",
+				"NW": "other"
+			},
+			"sprites": [0]
+		},
+		{
+			"when": {
+				"N":	"other",
+				"NE": "other",
+				"E":	"self",
+				"SE": "self",
+				"S":	"self",
+				"SW": "self",
+				"W":	"self",
+				"NW": "other"
+			},
+			"sprites": [1]
+		},
+		{
+			"when": {
+				"N":	"other",
+				"NE": "other",
+				"E":	"other",
+				"SE": "other",
+				"S":	"self",
+				"SW": "self",
+				"W":	"self",
+				"NW": "other"
+			},
+			"sprites": [2]
+		},
+		{
+			"when": {
+				"N":	"self",
+				"NE": "self",
+				"E":	"self",
+				"SE": "self",
+				"S":	"self",
+				"SW": "edge",
+				"W":	"edge",
+				"NW": "edge"
+			},
+			"sprites": [3]
+		},
+		{
+			"when": {
+				"N":	"self",
+				"NE": "self",
+				"E":	"self",
+				"SE": "self",
+				"S":	"self",
+				"SW": "self",
+				"W":	"self",
+				"NW": "self"
+			},
+			"sprites": [4]
+		},
+		{
+			"when": {
+				"N":	"self",
+				"NE": "edge",
+				"E":	"edge",
+				"SE": "edge",
+				"S":	"self",
+				"SW": "self",
+				"W":	"self",
+				"NW": "self"
+			},
+			"sprites": [5]
+		},
+		{
+			"when": {
+				"N":	"self",
+				"NE": "self",
+				"E":	"self",
+				"SE": "edge",
+				"S":	"edge",
+				"SW": "edge",
+				"W":	"edge",
+				"NW": "edge"
+			},
+			"sprites": [6]
+		},
+		{
+			"when": {
+				"N":	"self",
+				"NE": "self",
+				"E":	"self",
+				"SE": "edge",
+				"S":	"edge",
+				"SW": "edge",
+				"W":	"self",
+				"NW": "self"
+			},
+			"sprites": [7]
+		},
+		{
+			"when": {
+				"N":	"self",
+				"NE": "edge",
+				"E":	"edge",
+				"SE": "edge",
+				"S":	"edge",
+				"SW": "edge",
+				"W":	"self",
+				"NW": "self"
+			},
+			"sprites": [8]
+		}
+	]
+}
