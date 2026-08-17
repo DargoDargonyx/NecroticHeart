@@ -1,8 +1,7 @@
 {
 	"name": "grass",
 	"id": 1,
-	"layer": 1,
-	"sprites": [],
+	"sprites": [4],
 	"rules": [
 		{
 			"when": {

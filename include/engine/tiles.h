@@ -17,17 +17,17 @@
 #define TILE_PIXEL_SIZE 64
 
 typedef enum {
-	TILE_DIRT,
-	TILE_GRASS,
-	TILE_ROCK_BORDER,
-	TILE_VOID
+	TILE_EMPTY = -1,
+	TILE_VOID = -2,
+	
+	TILE_DIRT = 0,
+	TILE_GRASS = 1,
+	TILE_ROCK_BORDER = 2
 } TileType;
 
 typedef struct {
 	TileType type;
 	FloatPos world_pos;
-	int layer;
-
 	int sprite_id;
 } Tile;
 

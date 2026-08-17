@@ -1,7 +1,6 @@
 {
 	"name": "rock_border",
 	"id": 2,
-	"layer": 2,
 	"rules": [
 		{
 			"when": {

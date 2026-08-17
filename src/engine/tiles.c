@@ -38,7 +38,14 @@ TileType get_tile_type(Tile* map_tiles, IntSize map_size, IntPos tile_pos) {
 
 int choose_tile_sprite(Tile* map_tiles, IntSize map_size, IntPos tile_pos) {
     Tile* tile = &map_tiles[tile_pos.y * map_size.w + tile_pos.x];
+	if (tile->type == TILE_EMPTY) return -1;
+
 	TileDefinitions* tile_definitions = get_tile_definitions();
+	if (!tile_definitions) {
+		printf(PRINT_ERROR "Could not choose a tile sprite when the tile "
+				"definitions are null\n");
+		return -1;
+	}
     TileDefinition* definition = &tile_definitions->definitions[tile->type];
 
     for (int i = 0; i < definition->rule_count; i++) {
@@ -191,11 +198,19 @@ int tile_requirement_matches(TileType current_type, TileType neighbor_type,
 		TileRequirement requirement) {
     
 	switch (requirement.type) {
-        case REQUIRE_ANY:	return 1;
-        case REQUIRE_SELF:	return neighbor_type == current_type;
-        case REQUIRE_OTHER: return neighbor_type != current_type && neighbor_type != TILE_VOID;
-        case REQUIRE_EDGE:	return neighbor_type == TILE_VOID;
-        case REQUIRE_TYPE:	return neighbor_type == requirement.tile_type;
+        case REQUIRE_ANY:	
+			return 1;
+        case REQUIRE_SELF:	
+			return neighbor_type == current_type;
+        case REQUIRE_OTHER: 
+			return neighbor_type != current_type 
+				&& neighbor_type != TILE_EMPTY
+				&& neighbor_type != TILE_VOID;
+        case REQUIRE_EDGE:	
+			return neighbor_type == TILE_EMPTY 
+				|| neighbor_type == TILE_VOID;
+        case REQUIRE_TYPE:	
+			return neighbor_type == requirement.tile_type;
     }
 
     return 0;
@@ -350,7 +365,20 @@ void destroy_tile_definitions(void) {
 		return;
 	}
 
-	if (tile_definitions->definitions) free(tile_definitions->definitions);
+	if (tile_definitions->definitions) {
+		for (int i = 0; i < tile_definitions->definition_count; i++) {
+			TileDefinition* definition = &tile_definitions->definitions[i];
+			free(definition->name);
+			free(definition->sprites);
+			for (int j = 0; j < definition->rule_count; j++) {
+				free(definition->rules[j].sprites);
+			}
+			
+			free(definition->rules);
+		}
+
+		free(tile_definitions->definitions);
+	}
 	
 	free(tile_definitions);
 	tile_definitions = NULL;
@@ -394,10 +422,8 @@ int read_tile_definition(int tile_index, const char* tile_rule_path) {
 
 	cJSON* name = cJSON_GetObjectItem(tile_json, "name");
 	cJSON* id = cJSON_GetObjectItem(tile_json, "id");
-	cJSON* layer = cJSON_GetObjectItem(tile_json, "layer");
 	tile->name = strdup(name->valuestring);
 	tile->id = id->valueint;
-	tile->layer = layer->valueint;
 	
 	cJSON* sprites = cJSON_GetObjectItem(tile_json, "sprites");
 	tile->sprite_count = cJSON_GetArraySize(sprites);
@@ -419,5 +445,6 @@ int read_tile_definition(int tile_index, const char* tile_rule_path) {
 		}
 	}
 
+	cJSON_Delete(tile_json);
 	return 0;
 }

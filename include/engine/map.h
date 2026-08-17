@@ -19,9 +19,16 @@ typedef enum {
 } MapName;
 
 typedef struct {
+	char* name;
+	Tile* tiles;
+} MapLayer;
+
+typedef struct {
 	MapName name;
 	IntSize size;
-	Tile* tiles;
+
+	int layer_count;
+	MapLayer* layers;
 } Map;
 
 Map* load_map(MapName);

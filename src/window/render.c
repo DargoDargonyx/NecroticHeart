@@ -17,7 +17,7 @@ int render_tile(Tile* tile) {
 		printf(PRINT_WARNING "Could not render a null tile\n");
 		return 0;
 	}
-	
+
 	TileDefinitions* tile_definitions = get_tile_definitions();
 	if (!tile_definitions) {
 		printf(PRINT_ERROR "Could not render a tile when the tile "
@@ -90,13 +90,24 @@ int render_map(Map* map) {
 		return 0;
 	}
 
-	Camera* play_camera = get_play_camera();
+	for (int layer = 0; layer < map->layer_count; layer++) {
+		if (render_map_layer(&map->layers[layer], map->size)) {
+			printf(PRINT_ERROR "Failed to render a layer of the current map\n");
+			return 1;
+		}
+	}
+
+	return 0;
+}
+
+int render_map_layer(MapLayer* layer, IntSize map_size) {
+    Camera* play_camera = get_play_camera();
 	if (!play_camera) {
 		printf(PRINT_ERROR "Could not render a map with a null play camera\n");
 		return 1;
 	}
 
-    int start_x = play_camera->pixel_pos.x / TILE_PIXEL_SIZE;
+	int start_x = play_camera->pixel_pos.x / TILE_PIXEL_SIZE;
     int start_y = play_camera->pixel_pos.y / TILE_PIXEL_SIZE;
     int end_x = (play_camera->pixel_pos.x + play_camera->pixel_size.w) 
 		/ TILE_PIXEL_SIZE + 1;
@@ -105,22 +116,24 @@ int render_map(Map* map) {
 
     if (start_x < 0) start_x = 0;
     if (start_y < 0) start_y = 0;
-    if (end_x > map->size.w) end_x = map->size.w;
-    if (end_y > map->size.h) end_y = map->size.h;
+    if (end_x > map_size.w) end_x = map_size.w;
+    if (end_y > map_size.h) end_y = map_size.h;
 
-
-    for (int y = 0; y < map->size.h; y++) {
-        for (int x = 0; x < map->size.w; x++) {
-            Tile* tile = &map->tiles[y * map->size.w + x];
-
+	for (int y = start_y; y < end_y; y++) {
+        for (int x = start_x; x < end_x; x++) {
+            Tile* tile = &layer->tiles[y * map_size.w + x];
+            if (tile->type == TILE_EMPTY) continue;
             if (render_tile(tile)) {
-				printf(PRINT_ERROR "Failed to render a tile at world pos: (%f, %f)\n",
-						tile->world_pos.x, tile->world_pos.y);
+				printf(
+					PRINT_WARNING "Failed to render a tile at world pos: (%f, %f)\n",
+					tile->world_pos.x, 
+					tile->world_pos.y
+				);
 			}
         }
     }
 
-	return 0;
+    return 0;
 }
 
 // Widgets
