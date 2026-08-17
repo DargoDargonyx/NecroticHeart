@@ -20,7 +20,7 @@ typedef enum {
 
 typedef struct {
 	MapName name;
-	IntSize world_size;
+	IntSize size;
 	Tile* tiles;
 } Map;
 

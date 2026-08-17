@@ -1,7 +1,7 @@
 /**
  * @file display.c
  * @author DargoDargonyx
- * @date 08/11/2026
+ * @date 08/16/2026
  */
 
 #include "window/display.h"
@@ -37,8 +37,8 @@ int init_game_window(const char* window_name) {
 			window_name,
 			SDL_WINDOWPOS_CENTERED,
 			SDL_WINDOWPOS_CENTERED,
-			WINDOW_RENDER_LOGICAL_SIZE_X,
-			WINDOW_RENDER_LOGICAL_SIZE_Y,
+			0,
+			0,
 			SDL_WINDOW_FULLSCREEN_DESKTOP
 		);
 	} else {
@@ -62,12 +62,6 @@ int init_game_window(const char* window_name) {
 		game_window->sdl_window,
 		-1,
 		SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC
-	);
-
-	SDL_RenderSetLogicalSize(
-		game_window->sdl_renderer, 
-		WINDOW_RENDER_LOGICAL_SIZE_X,
-		WINDOW_RENDER_LOGICAL_SIZE_Y
 	);
 
 	game_window->running = 1;

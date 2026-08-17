@@ -1,19 +1,134 @@
 /**
  * @file render.c
  * @author DargoDargonyx
- * @date 08/11/2026
+ * @date 08/16/2026
  */
 
 #include "window/render.h"
 #include "window/display.h"
+#include "window/camera.h"
+#include "engine/map.h"
 
+
+// Tile
+
+int render_tile(Tile* tile) {
+	if (!tile) {
+		printf(PRINT_WARNING "Could not render a null tile\n");
+		return 0;
+	}
+	
+	TileDefinitions* tile_definitions = get_tile_definitions();
+	if (!tile_definitions) {
+		printf(PRINT_ERROR "Could not render a tile when the tile "
+				"definitions are null\n");
+		return 1;
+	}
+	
+	TileDefinition* tile_definition = &tile_definitions->definitions[tile->type];
+    int sprite_x = tile->sprite_id % tile_definition->tilesheet->size.w;
+    int sprite_y = tile->sprite_id / tile_definition->tilesheet->size.w;
+
+	Camera* play_camera = get_play_camera();
+	if (!play_camera) {
+		printf(PRINT_ERROR "Could not render a tile when the play "
+				"camera is null\n");
+		return 1;
+	}
+
+    SDL_Rect src = {
+        .x = sprite_x * TILE_PIXEL_SIZE,
+        .y = sprite_y * TILE_PIXEL_SIZE,
+        .w = TILE_PIXEL_SIZE,
+        .h = TILE_PIXEL_SIZE
+    };
+    SDL_Rect dst = {
+        .x = tile->world_pos.x * TILE_PIXEL_SIZE - play_camera->pixel_pos.x,
+        .y = tile->world_pos.y * TILE_PIXEL_SIZE - play_camera->pixel_pos.y,
+        .w = TILE_PIXEL_SIZE,
+        .h = TILE_PIXEL_SIZE
+    };
+
+    GameWindow* game_window = get_game_window();
+	if (!game_window) {
+		printf(PRINT_ERROR "Could not access the game window while trying to "
+				"render a tile\n");
+		return 1;
+	}
+
+	SDL_RenderCopy(
+        game_window->sdl_renderer,
+        tile_definition->tilesheet->sdl_texture,
+        &src,
+        &dst
+    );
+
+	return 0;
+}
+
+// Map
+
+int render_current_map(void) {
+	MapManager* map_manager = get_map_manager();
+	if (!map_manager) {
+		printf(PRINT_ERROR "Could not render the play scene because the map "
+				"manager is null\n");
+		return 1;
+	}
+
+	if (!map_manager->current_map) {
+		printf(PRINT_WARNING "Could not render the current map because it's null\n");
+		return 0;
+	}
+
+	return render_map(map_manager->current_map);
+}
+
+int render_map(Map* map) {
+	if (!map) {
+		printf(PRINT_WARNING "Could not render a null map\n");
+		return 0;
+	}
+
+	Camera* play_camera = get_play_camera();
+	if (!play_camera) {
+		printf(PRINT_ERROR "Could not render a map with a null play camera\n");
+		return 1;
+	}
+
+    int start_x = play_camera->pixel_pos.x / TILE_PIXEL_SIZE;
+    int start_y = play_camera->pixel_pos.y / TILE_PIXEL_SIZE;
+    int end_x = (play_camera->pixel_pos.x + play_camera->pixel_size.w) 
+		/ TILE_PIXEL_SIZE + 1;
+    int end_y = (play_camera->pixel_pos.y + play_camera->pixel_size.h) 
+		/ TILE_PIXEL_SIZE + 1;
+
+    if (start_x < 0) start_x = 0;
+    if (start_y < 0) start_y = 0;
+    if (end_x > map->size.w) end_x = map->size.w;
+    if (end_y > map->size.h) end_y = map->size.h;
+
+
+    for (int y = 0; y < map->size.h; y++) {
+        for (int x = 0; x < map->size.w; x++) {
+            Tile* tile = &map->tiles[y * map->size.w + x];
+
+            if (render_tile(tile)) {
+				printf(PRINT_ERROR "Failed to render a tile at world pos: (%f, %f)\n",
+						tile->world_pos.x, tile->world_pos.y);
+			}
+        }
+    }
+
+	return 0;
+}
 
 // Widgets
 
 int render_widgets(WidgetCont* cont) {
 	if (!cont) {
 		printf(PRINT_WARNING "Could not render widgets for an empty widget container\n");
-		return 1;
+		return 0;
 	}
 
 	for (int i = 0; i < cont->count; i++) {
@@ -34,6 +149,11 @@ int render_widgets(WidgetCont* cont) {
 }
 
 int render_button(Button* btn) {
+	if (!btn) {
+		printf(PRINT_WARNING "Could not render a null button widget\n");
+		return 0;
+	}
+
 	GameWindow* game_window = get_game_window();
 	if (!game_window) {
 		printf(PRINT_ERROR "Could not access the game window while rendering a button\n");
@@ -76,4 +196,11 @@ int render_button(Button* btn) {
 }
 
 // @TODO
-int render_info_tag(InfoTag* info_tag) { return 0; }
+int render_info_tag(InfoTag* info_tag) { 
+	if (!info_tag) {
+		printf(PRINT_WARNING "Could not render a null info tag widget\n");
+		return 0;
+	}
+
+	return 0; 
+}

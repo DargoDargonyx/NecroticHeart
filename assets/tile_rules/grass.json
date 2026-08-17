@@ -6,40 +6,40 @@
 	"rules": [
 		{
 			"when": {
-				"N":	"other",
-				"NE": "other",
+				"N":	"edge",
+				"NE": "edge",
 				"E":	"self",
 				"SE": "any",
 				"S":	"self",
-				"SW": "other",
-				"W":	"other",
-				"NW": "other"
+				"SW": "edge",
+				"W":	"edge",
+				"NW": "edge"
 			},
 			"sprites": [0]
 		},
 		{
 			"when": {
-				"N":	"other",
-				"NE": "other",
+				"N":	"edge",
+				"NE": "edge",
 				"E":	"self",
 				"SE": "self",
 				"S":	"self",
 				"SW": "self",
 				"W":	"self",
-				"NW": "other"
+				"NW": "edge"
 			},
 			"sprites": [1]
 		},
 		{
 			"when": {
-				"N":	"other",
-				"NE": "other",
-				"E":	"other",
-				"SE": "other",
+				"N":	"edge",
+				"NE": "edge",
+				"E":	"edge",
+				"SE": "edge",
 				"S":	"self",
 				"SW": "self",
 				"W":	"self",
-				"NW": "other"
+				"NW": "edge"
 			},
 			"sprites": [2]
 		},
@@ -121,5 +121,5 @@
 			},
 			"sprites": [8]
 		}
-	]
+		]
 }

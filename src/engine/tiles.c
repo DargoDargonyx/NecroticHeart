@@ -18,8 +18,8 @@ static TileDefinitions* tile_definitions = NULL;
 // Tiles
 
 int get_tile_id_from_name(const char* name) {
-	if (strcmp(name, "grass") == 0) return 0;
-	else if (strcmp(name, "dirt") == 0) return 1;
+	if (strcmp(name, "dirt") == 0) return 0;
+	else if (strcmp(name, "grass") == 0) return 1;
 	else if (strcmp(name, "rock_border") == 0) return 2;
 	else return -1;
 }
@@ -67,7 +67,7 @@ Tilesheet* create_dirt_tilesheet(void) {
 	GameWindow* game_window = get_game_window();
 	tilesheet->sdl_texture = IMG_LoadTexture(
 		game_window->sdl_renderer,
-		DIRT_TILESET_PATH
+		DIRT_TILESHEET_PATH
 	);
 	if (!tilesheet->sdl_texture)
 		printf(PRINT_ERROR "Failed to load the dirt tilesheet sdl texture\n");
@@ -82,7 +82,7 @@ Tilesheet* create_grass_tilesheet(void) {
 	GameWindow* game_window = get_game_window();
 	tilesheet->sdl_texture = IMG_LoadTexture(
 		game_window->sdl_renderer,
-		GRASS_TILESET_PATH
+		GRASS_TILESHEET_PATH
 	);
 	if (!tilesheet->sdl_texture)
 		printf(PRINT_ERROR "Failed to load the grass tilesheet sdl texture\n");
@@ -97,7 +97,7 @@ Tilesheet* create_rock_border_tilesheet(void) {
 	GameWindow* game_window = get_game_window();
 	tilesheet->sdl_texture = IMG_LoadTexture(
 		game_window->sdl_renderer,
-		ROCK_BORDER_TILESET_PATH
+		ROCK_BORDER_TILESHEET_PATH
 	);
 	if (!tilesheet->sdl_texture)
 		printf(PRINT_ERROR "Failed to load the rock border tilesheet sdl texture\n");
@@ -291,15 +291,16 @@ int tile_rule_matches(Tile* map_tiles, IntSize map_size,
 
 TileRule parse_tile_rule(cJSON* json) {
     TileRule rule = {0};
+	cJSON* when = cJSON_GetObjectItem(json, "when");
 
-	rule.north = parse_tile_requirement(cJSON_GetObjectItem(json, "N"));
-	rule.north_east = parse_tile_requirement(cJSON_GetObjectItem(json, "NE"));
-    rule.east = parse_tile_requirement(cJSON_GetObjectItem(json, "E"));
-    rule.south_east = parse_tile_requirement(cJSON_GetObjectItem(json, "SE"));
-    rule.south = parse_tile_requirement(cJSON_GetObjectItem(json, "S"));
-    rule.south_west = parse_tile_requirement(cJSON_GetObjectItem(json, "SW"));
-    rule.west = parse_tile_requirement(cJSON_GetObjectItem(json, "W"));
-    rule.north_west = parse_tile_requirement(cJSON_GetObjectItem(json, "NW"));
+	rule.north = parse_tile_requirement(cJSON_GetObjectItem(when, "N"));
+	rule.north_east = parse_tile_requirement(cJSON_GetObjectItem(when, "NE"));
+    rule.east = parse_tile_requirement(cJSON_GetObjectItem(when, "E"));
+    rule.south_east = parse_tile_requirement(cJSON_GetObjectItem(when, "SE"));
+    rule.south = parse_tile_requirement(cJSON_GetObjectItem(when, "S"));
+    rule.south_west = parse_tile_requirement(cJSON_GetObjectItem(when, "SW"));
+    rule.west = parse_tile_requirement(cJSON_GetObjectItem(when, "W"));
+    rule.north_west = parse_tile_requirement(cJSON_GetObjectItem(when, "NW"));
 
     cJSON* sprites = cJSON_GetObjectItem(json, "sprites");
     rule.sprite_count = cJSON_GetArraySize(sprites);
@@ -315,15 +316,32 @@ TileRule parse_tile_rule(cJSON* json) {
 
 int init_tile_definitions(void) {
 	if (tile_definitions) {
-		printf(PRINT_WARNING "Attempting to initialize the tile definitions when they "
-				"have already been initialized\n");
+		printf(PRINT_WARNING "Attempting to initialize the tile definitions when "
+				"they have already been initialized\n");
 		return 0;
 	}
 	tile_definitions = malloc(sizeof(TileDefinitions));
 	tile_definitions->definition_count = TILESHEET_COUNT;
 	tile_definitions->definitions = calloc(TILESHEET_COUNT, sizeof(TileDefinition));
 		
-	return read_tile_definitions();
+	if (read_tile_definitions()) {
+		printf(PRINT_ERROR "Failed to read tile definitions while initializing them\n");
+		return 1;
+	}
+
+	if (init_tilesheet_manager()) {
+		printf(PRINT_ERROR "Failed to initialize tilesheet manager\n");
+		return 1;
+	}
+
+	tile_definitions->definitions[DIRT_TILE_INDEX].tilesheet = 
+		tilesheet_manager->tilesheets[DIRT_TILE_INDEX];
+	tile_definitions->definitions[GRASS_TILE_INDEX].tilesheet =
+		tilesheet_manager->tilesheets[GRASS_TILE_INDEX];
+	tile_definitions->definitions[ROCK_BORDER_TILE_INDEX].tilesheet = 
+		tilesheet_manager->tilesheets[ROCK_BORDER_TILE_INDEX];
+
+	return 0;
 }
 
 void destroy_tile_definitions(void) {
@@ -342,8 +360,8 @@ TileDefinitions* get_tile_definitions(void) { return tile_definitions; }
 
 int read_tile_definitions(void) {
 	if (!tile_definitions) {
-		printf(PRINT_ERROR "Could not read tile definitions with a null tile definitions "
-				"container\n");
+		printf(PRINT_ERROR "Could not read tile definitions with a null tile "
+				"definitions container\n");
 		return 1;
 	}
 

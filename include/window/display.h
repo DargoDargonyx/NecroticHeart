@@ -1,7 +1,7 @@
 /**
  * @file display.h
  * @author DargoDargonyx
- * @date 08/11/2026
+ * @date 08/16/2026
  */
 
 #ifndef DISPLAY_H
@@ -13,10 +13,6 @@
 
 
 // Game display window
-
-#define WINDOW_RENDER_LOGICAL_SIZE_X 1920
-#define WINDOW_RENDER_LOGICAL_SIZE_Y 1080
-
 typedef struct {
     IntSize resolution;
     SDL_Window* sdl_window;

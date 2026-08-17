@@ -14,16 +14,17 @@
 
 
 // Tiles
+#define TILE_PIXEL_SIZE 64
+
 typedef enum {
-	TILE_GRASS,
 	TILE_DIRT,
+	TILE_GRASS,
 	TILE_ROCK_BORDER,
 	TILE_VOID
 } TileType;
 
 typedef struct {
 	TileType type;
-	IntSize pixel_size;
 	FloatPos world_pos;
 	int layer;
 
@@ -36,9 +37,9 @@ int choose_tile_sprite(Tile*, IntSize, IntPos);
 int choose_random_tile_sprite(int*, int);
 
 // Tilesheets
-#define DIRT_TILESET_PATH			"../assets/tiles/dirt_tileset.png"
-#define GRASS_TILESET_PATH			"../assets/tiles/grass_tileset.png"
-#define ROCK_BORDER_TILESET_PATH	"../assets/tiles/rock_border_tileset.png"
+#define DIRT_TILESHEET_PATH			"../assets/tiles/dirt_tileset.png"
+#define GRASS_TILESHEET_PATH		"../assets/tiles/grass_tileset.png"
+#define ROCK_BORDER_TILESHEET_PATH	"../assets/tiles/rock_border_tileset.png"
 
 #define TILESHEET_COUNT 3
 #define DIRT_TILE_INDEX			0
@@ -46,8 +47,8 @@ int choose_random_tile_sprite(int*, int);
 #define ROCK_BORDER_TILE_INDEX	2
 
 typedef enum {
-	GRASS_TILESHEET,
 	DIRT_TILESHEET,
+	GRASS_TILESHEET,
 	ROCK_BORDER_TILESHEET
 } TilesheetName;
 
@@ -90,8 +91,8 @@ typedef struct {
 TileRequirement parse_tile_requirement(cJSON*);
 
 // Tiling rules
-#define GRASS_TILE_RULE_PATH		"../assets/tile_rules/grass.json"
 #define DIRT_TILE_RULE_PATH			"../assets/tile_rules/dirt.json"
+#define GRASS_TILE_RULE_PATH		"../assets/tile_rules/grass.json"
 #define ROCK_BORDER_TILE_RULE_PATH	"../assets/tile_rules/rock_border.json"
 
 typedef struct {
@@ -122,6 +123,8 @@ typedef struct {
 
 	TileRule* rules;
 	int rule_count;
+
+	Tilesheet* tilesheet;
 } TileDefinition;
 
 typedef struct {

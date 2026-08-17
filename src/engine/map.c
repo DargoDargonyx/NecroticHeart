@@ -22,6 +22,7 @@ void destroy_map(Map* self) {
 		printf(PRINT_WARNING "Attempting to destroy a null map\n");
 	}
 
+	if (self->tiles) free(self->tiles);
 	free(self);
 }
 
@@ -93,9 +94,9 @@ Map* load_map(MapName name) {
     }
 
 	Map* map = malloc(sizeof(Map));
-    map->world_size.w = width_json->valueint;
-    map->world_size.h = height_json->valueint;
-    int count = map->world_size.w * map->world_size.h;
+    map->size.w = width_json->valueint;
+    map->size.h = height_json->valueint;
+    int count = map->size.w * map->size.h;
     map->tiles = calloc(count, sizeof(Tile));
 
     if (!map->tiles) {
@@ -109,23 +110,25 @@ Map* load_map(MapName name) {
 		map->tiles[i].type = value->valueint;
 	}
 
-	for (int y = 0; y < map->world_size.h; y++) {
-		for (int x = 0; x < map->world_size.w; x++) {
-			Tile* tile = &map->tiles[y * map->world_size.w + x];
+	for (int y = 0; y < map->size.h; y++) {
+		for (int x = 0; x < map->size.w; x++) {
+			Tile* tile = &map->tiles[y * map->size.w + x];
+			tile->world_pos = (FloatPos) { .x = x, .y = y };
 			
 			tile->sprite_id = choose_tile_sprite(
 				map->tiles, 
-				map->world_size, 
+				map->size, 
 				(IntPos) { .x = x, .y = y }
 			);
 
 			if (tile->sprite_id == -1) {
-				printf(PRINT_ERROR "Failed to find a matching sprite id for a tile "
-						"with rules\n");
+				printf(PRINT_ERROR "Failed to find a matching sprite id for "
+						"a tile with rules\n");
 				
 				cJSON_Delete(map_json);
 				return NULL;
 			}
+
 		}
 	}
 

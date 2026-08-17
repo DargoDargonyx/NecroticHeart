@@ -104,7 +104,15 @@ int run_game_loop(void) {
 		// Render
 		SDL_SetRenderDrawColor(game_window->sdl_renderer, 30, 30, 30, 255);
 		SDL_RenderClear(game_window->sdl_renderer);
-		
+
+		if (scene_manager->current_scene_type == PLAY_SCENE) {
+			if (render_current_map()) {
+				game_window->running = 0;
+				printf(PRINT_ERROR "Unable to render the current map in the play scene\n");
+				quit_game(EXIT_FAILURE);
+			}
+		}
+
 		if (render_widgets(scene_manager->current_scene->widget_cont)) {
 			game_window->running = 0;
 			printf(PRINT_ERROR "Unable to render the current game scene\n");

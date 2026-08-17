@@ -8,6 +8,7 @@
 #include "engine/game.h"
 #include "engine/map.h"
 #include "util/font.h"
+#include "window/camera.h"
 
 #include <stdlib.h>
 
@@ -133,13 +134,13 @@ int init_play_scene(void) {
 	scene->widget_cont = create_widget_cont();
 	scene->destroy = destroy_play_scene;
 
-	if (init_tile_definitions()) {
-		printf(PRINT_ERROR "Failed to initialize the tile definitions\n");
+	if (init_play_camera()) {
+		printf(PRINT_ERROR "Failed to initialize the play camera\n");
 		return 1;
 	}
 
-	if (init_tilesheet_manager()) {
-		printf(PRINT_ERROR "Failed to initialize the tilesheet manager\n");
+	if (init_tile_definitions()) {
+		printf(PRINT_ERROR "Failed to initialize the tile definitions\n");
 		return 1;
 	}
 
@@ -159,9 +160,9 @@ void destroy_play_scene(Scene* self) {
 	}
 
 	if (self->widget_cont) destroy_widget_cont(self->widget_cont);
-	
+
+	if (get_play_camera()) destroy_play_camera();
 	if (get_tile_definitions())	destroy_tile_definitions();
-	if (get_tilesheet_manager()) destroy_tilesheet_manager();
 	if (get_map_manager()) destroy_map_manager();
 
 	free(self);
